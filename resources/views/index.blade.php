@@ -9,6 +9,7 @@
 <body>
 
     <h1>ESTO ES MI TITULO</h1>
+    <h2>ahora esto es nuevo</h2>
     
 </body>
 </html>
