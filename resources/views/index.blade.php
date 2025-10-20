@@ -9,6 +9,9 @@
 <body>
 
     <h1>ESTO ES MI TITULO</h1>
-    
+    <h2>ahora esto es nuevo</h2>
+    <p>esto tambien es una prueba</p>
+    <p>hola
+    </p>
 </body>
 </html>
