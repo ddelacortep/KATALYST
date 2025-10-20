@@ -7,9 +7,21 @@
     <title>Document</title>
 </head>
 <body>
+    <header> 
+        <title><p id="title">Katalist</p></title>
+        <div>
+            <button> <p id="btn">Sing in</p> </button>
+            <button> <p id="btn">Log in</p> </button>
+        </div>
+    </header>
 
-    <h1>ESTO ES MI TITULO</h1>
-    <h2>ahora esto es nuevo</h2>
-    <p>esto tambien es una prueba</p>
+    <div>
+
+    </div>
+
+    <div>
+
+
+    </div>
 </body>
 </html>
