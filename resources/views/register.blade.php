@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-    <h1>HOla esta es la parte de angel</h1>
-    <h2>Ya me va?</h2>
-</body>
-</html>
+@extends('plantillas.plantilla')
+
+@section('contenido')
+
+<h1>Hola esto es el contenido</h1>
+
+@endsection
+@section('footer') 
+    <p>Hemos cambiado los terminos</p>
+@endsection
