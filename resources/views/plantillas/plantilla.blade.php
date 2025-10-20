@@ -7,13 +7,6 @@
     <title>Document</title>
 </head>
 <body>
-    <main>
-        navbar
-        @yield('contenido')
-    </main>
-    <footer>
-        @yield('footer')
-        <p>Terminos y condiciones de Katalyst <a href="#">aqui</a></p>
-    </footer>
+    
 </body>
 </html>
