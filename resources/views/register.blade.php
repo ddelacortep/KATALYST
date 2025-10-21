@@ -6,7 +6,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="style.css">
     <title>Register</title>
-    <link rel="stylesheet" href="public\style.css">
 </head>
 <body>
     <header>

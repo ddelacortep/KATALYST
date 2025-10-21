@@ -8,20 +8,5 @@ Route::get('/', function () {
 
 // Página de inicio
 Route::get('/', function () {
-    return view('index'); // resources/views/index.blade.php
-});
-
-// Registro
-Route::get('/register', function () {
-    return view('register'); // resources/views/register.blade.php
-});
-
-// Login
-Route::get('/login', function () {
-    return view('login'); // resources/views/login.blade.php
-});
-
-// Proyectos
-Route::get('/proyectos', function () {
-    return view('proyectos'); // resources/views/proyectos.blade.php
+    return view('proyectos'); // resources/views/index.blade.php
 });
