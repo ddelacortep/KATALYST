@@ -310,12 +310,9 @@ namespace App\Models {
     /**
      * App\Models\Participar
      *
-     * @property int $id_rols
-     * @property int $id_usuario
-     * @property int $id_proyecto
-     * @method static \Illuminate\Database\Eloquent\Builder<Participar>|Participar whereIdProyecto($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Participar>|Participar whereIdUsuario($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Participar>|Participar whereIdRols($value)
+     * @property-read \App\Models\Usuario $usuario
+     * @property-read \App\Models\Proyecto $proyecto
+     * @property-read \App\Models\Rols $rol
      * @method static \Illuminate\Database\Eloquent\Builder<Participar>|Participar newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Participar>|Participar newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Participar>|Participar query()
@@ -619,10 +616,12 @@ namespace App\Models {
     /**
      * App\Models\Proyecto
      *
-     * @property string $nom_proyecto
-     * @property int $id_proyecto
-     * @method static \Illuminate\Database\Eloquent\Builder<Proyecto>|Proyecto whereIdProyecto($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Proyecto>|Proyecto whereNomProyecto($value)
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Tareas> $tareas
+     * @property-read int|null $tareas_count
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Participar> $participar
+     * @property-read int|null $participar_count
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Usuario> $usuarios
+     * @property-read int|null $usuarios_count
      * @method static \Illuminate\Database\Eloquent\Builder<Proyecto>|Proyecto newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Proyecto>|Proyecto newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Proyecto>|Proyecto query()
@@ -926,10 +925,8 @@ namespace App\Models {
     /**
      * App\Models\Rols
      *
-     * @property string $nom_rols
-     * @property int $id_rols
-     * @method static \Illuminate\Database\Eloquent\Builder<Rols>|Rols whereIdRols($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Rols>|Rols whereNomRols($value)
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Participar> $participaciones
+     * @property-read int|null $participaciones_count
      * @method static \Illuminate\Database\Eloquent\Builder<Rols>|Rols newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Rols>|Rols newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Rols>|Rols query()
@@ -1233,21 +1230,9 @@ namespace App\Models {
     /**
      * App\Models\Tareas
      *
-     * @property int $id_proyecto
-     * @property int $id_estados
-     * @property int $id_usuario
-     * @property string $hora_final
-     * @property string $hora_creacion
-     * @property string $nom_tarea
-     * @property int $id_tarea
      * @property-read \App\Models\EstadoTarea $estadotarea
-     * @method static \Illuminate\Database\Eloquent\Builder<Tareas>|Tareas whereIdTarea($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Tareas>|Tareas whereNomTarea($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Tareas>|Tareas whereHoraCreacion($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Tareas>|Tareas whereHoraFinal($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Tareas>|Tareas whereIdUsuario($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Tareas>|Tareas whereIdEstados($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Tareas>|Tareas whereIdProyecto($value)
+     * @property-read \App\Models\Usuario $usuario
+     * @property-read \App\Models\Proyecto $proyecto
      * @method static \Illuminate\Database\Eloquent\Builder<Tareas>|Tareas newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Tareas>|Tareas newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Tareas>|Tareas query()
@@ -1872,14 +1857,10 @@ namespace App\Models {
     /**
      * App\Models\Usuario
      *
-     * @property string $email
-     * @property mixed $password
-     * @property mixed $nom_usuario
-     * @property int $id_usuario
-     * @method static \Illuminate\Database\Eloquent\Builder<Usuario>|Usuario whereIdUsuario($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Usuario>|Usuario whereNomUsuario($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Usuario>|Usuario wherePassword($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Usuario>|Usuario whereEmail($value)
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Tareas> $tareas
+     * @property-read int|null $tareas_count
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Proyecto> $proyectos
+     * @property-read int|null $proyectos_count
      * @method static \Illuminate\Database\Eloquent\Builder<Usuario>|Usuario newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Usuario>|Usuario newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Usuario>|Usuario query()
