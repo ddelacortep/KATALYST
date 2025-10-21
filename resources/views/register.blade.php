@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -51,7 +53,7 @@
         </form>
     </main>
     <footer>
-        <h3>Terminos y Condiciones de Katalyst <a href="">aquí</a></h3> 
+        <h3>Terminos y Condiciones de Katalyst <a href="">aquí</a></h3>
     </footer>
 </body>
 
