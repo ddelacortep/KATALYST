@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php
 
 namespace App\Models {
@@ -2181,3 +2182,6 @@ namespace App\Models {
     }
 
 }
+=======
+<?php
+>>>>>>> 3c8b5f3f862a978b1aca995e5983e19e6b6b9432
