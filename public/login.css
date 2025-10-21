@@ -7,10 +7,9 @@
 
 
 body {
-    /* Fondo limpio, centrar contenido */
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column; /* main y footer apilados verticalmente */
+    justify-content: space-between; /* main centrado, footer abajo */
     min-height: 100vh;
     margin: 0;
     font-family: "Lexend Deca" , sans-serif;
@@ -20,7 +19,12 @@ body {
 main {
     padding: 20px;
     width: 100%;
-    max-width: 350px; /* Ancho máximo para la tarjeta de login */
+    max-width: 350px;
+    margin: 0 auto; /* Centra horizontalmente */
+    flex-grow: 1; /* Ocupa espacio vertical disponible */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centra verticalmente el contenido */
 }
 
 /*
@@ -51,19 +55,16 @@ header {
  * --------------------------------
  */
 
-/* Estilos para el contenedor del logo  */
 main > div:first-child {
     text-align: center;
     margin-bottom: 30px;
 }
 
-/* Puedes darle un tamaño fijo al logo */
 img {
-    width: 80px;
-    height: 80px;
+    width: 120px;
+    height: 120px;
     margin-bottom: 80px;
     border-radius: 10%;
-    
 }
 
 /*
@@ -75,13 +76,11 @@ img {
 form {
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Espacio entre los campos */
+    gap: 20px; /* Espacio entre campos */
 }
-
 
 input[type="text"], 
 input[type="password"] {
-
     width: 100%;
     padding: 15px;
     border: none;
@@ -94,9 +93,8 @@ input[type="password"] {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25); 
 }
 
-/* Estilo para el texto/placeholder dentro del campo */
 input::placeholder {
-    color: rgba(255, 255, 255, 0.8); /* Gris "Username" / "Password" */
+    color: rgba(255, 255, 255, 0.8);
 }
 
 /*
@@ -106,14 +104,61 @@ input::placeholder {
  */
 
 button[id="submit"] {
-    
-    background-color: #5abcb7; /* Un turquesa agradable */
+    background-color: #5abcb7; /* Turquesa */
     color: white;
     font-size: 1.2em;
     font-weight: bold;
     padding: 15px;
     border: none;
-    border-radius: 10px; /* Esquinas redondeadas */
+    border-radius: 10px;
     cursor: pointer;
-    margin-top: 15px; /* Espacio superior*/
-} 
+    margin-top: 15px;
+}
+
+/*
+ * --------------------------------
+ * ESTILOS DEL FOOTER
+ * --------------------------------
+ */
+
+footer {
+    text-align: center;
+    padding: 15px 0;
+    font-size: 0.9em;
+    color: #666;
+    font-family: Arial, sans-serif;
+    bottom: 50px;
+}
+
+footer a {
+    color: #5abcb7; /* Mismo turquesa que tu botón */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/*
+ * --------------------------------
+ * ESTILOS PARA MOSTRAR/OCULTAR CONTRASEÑA
+ * --------------------------------
+ */
+
+.password-container {
+    position: relative;
+    width: 100%;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.1em;
+    cursor: pointer;
+}
