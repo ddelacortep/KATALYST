@@ -3,25 +3,13 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('index');
 });
 
-// Página de inicio
-Route::get('/', function () {
-    return view('index'); // resources/views/index.blade.php
-});
-
-// Registro
-Route::get('/register', function () {
-    return view('register'); // resources/views/register.blade.php
-});
-
-// Login
 Route::get('/login', function () {
-    return view('login'); // resources/views/login.blade.php
-});
+    return view('login');
+})->name('login');
 
-// Proyectos
-Route::get('/proyectos', function () {
-    return view('proyectos'); // resources/views/proyectos.blade.php
-});
+Route::get('/register', function () {
+    return view('register');
+})->name('register');

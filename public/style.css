@@ -4,6 +4,8 @@
  * --------------------------------
  */
 
+
+
 body {
     /* Fondo limpio, centrar contenido */
     display: flex;
@@ -11,7 +13,7 @@ body {
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: "Lexend Deca" , sans-serif;
     background-color: #FBFBFB; /* Color de fondo claro */
 }
 
@@ -79,7 +81,7 @@ form {
 
 input[type="text"], 
 input[type="password"] {
-   
+
     width: 100%;
     padding: 15px;
     border: none;
