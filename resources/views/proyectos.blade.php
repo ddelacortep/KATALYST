@@ -37,12 +37,9 @@
                 <div class="project-grid" id="projectGrid">
                 </div>
             </div>
-
-
         </div>
     </main>
 </body>
 <script src="proyectos.js"></script>
-
 
 </html>

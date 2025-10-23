@@ -27,14 +27,6 @@ main {
 /* --------------------------------
    ESTILOS DEL HEADER (Botón Volver)
 -------------------------------- */
-.back {
-    position: absolute;
-    top: 50px;  
-    left: 50px;
-    cursor: pointer;
-    background-color: transparent;
-    border: none;
-}
 
 /* --------------------------------
    ESTILOS DEL LOGO
