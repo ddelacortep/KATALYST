@@ -11,3 +11,13 @@ footer {
 footer p {
     font-size: 14px;
 }
+
+
+.back {
+    position: absolute;
+    top: 50px;  
+    left: 50px;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+}
