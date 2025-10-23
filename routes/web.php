@@ -9,8 +9,8 @@ Route::get('/', function () {
 
 // Página de inicio
 Route::get('/', function () {
-    return view('index'); // resources/views/index.blade.php
-})->name('index');
+    return view('proyectos'); // resources/views/index.blade.php
+})->name('proyectos');
 
 // Registro
 Route::get('/register', function () {
