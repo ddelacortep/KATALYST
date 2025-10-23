@@ -102,18 +102,6 @@ header button:hover {
     background-color: #f8f8f8;
 }
 
-footer {
-    background-color: rgba(0, 0, 0, 0.3);
-    color: white;
-    text-align: center;
-    padding: 20px;
-    backdrop-filter: blur(10px);
-}
-
-footer p {
-    font-size: 14px;
-}
-
 #logoContainer {
     background-color: #67B0AD;
     backdrop-filter: blur(10px);

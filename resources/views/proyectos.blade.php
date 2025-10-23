@@ -5,13 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Proyectos</title>
-    <link rel="stylesheet" href="proyectos.css">
+    <link rel="stylesheet" href="css/proyectos.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
     <main class="container">
         <div class="header">
-            <img class="logo" src="logo.png" alt="">
+            <img class="logo" src="img/logo.png" alt="">
             <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                 class="icon icon-tabler icons-tabler-outline icon-tabler-user">

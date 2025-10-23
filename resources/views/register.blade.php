@@ -8,7 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Register</title>
-    <link rel="stylesheet" href="register.css">
+    <link rel="stylesheet" href="css/register.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap" rel="stylesheet">
@@ -26,7 +27,7 @@
     </button>
     <main>
         <div class="logo-container">
-            <img src="logo.png" alt="Imagen Katalyst">
+            <img src="img/logo.png" alt="Imagen Katalyst">
         </div>
         <div id="container">
             <form action="" class="left-register">
@@ -53,7 +54,7 @@
         </form>
     </main>
     <footer>
-        <h3>Terminos y Condiciones de Katalyst <a href="">aquí</a></h3>
+        <p>© 2024 Katalist. All rights reserved.</p>
     </footer>
 </body>
 

@@ -39,15 +39,15 @@ header {
     left: 20px;
 }
 
-#btn-back {
-    background: none;
-    border: none;
-    font-size: 1.2em;
+.back {
+    position: absolute;
+    top: 50px;  
+    left: 50px;
     cursor: pointer;
-    color: #333;
-    padding: 10px;
-    border-radius: 8px;
+    background-color: transparent;
+    border: none;
 }
+
 
 /*
  * --------------------------------
