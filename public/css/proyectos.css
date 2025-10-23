@@ -23,7 +23,7 @@ body {
 
 
 .header {
-    background-color: #5a5a5a;
+    background-color: #4a4a4a;
     border-radius: 12px;
     padding: 20px 30px;
     display: flex;
@@ -94,7 +94,7 @@ body {
 
 .main-content {
     flex: 1;
-    background-color: #5a5a5a;
+    background-color: #4a4a4a;
     padding: 25px;
     border-radius: 12px;
     display: flex;
@@ -112,12 +112,6 @@ body {
     background-color: #d4d4d4;
     border-radius: 12px;
     height: 65px;
-}
-
-.project-area {
-    background-color: #5a5a5a;
-    border-radius: 8px;
-    flex: 1;
 }
 
 .btn-crear {
