@@ -4,14 +4,16 @@
  * --------------------------------
  */
 
+
+
 body {
     display: flex;
     flex-direction: column; /* main y footer apilados verticalmente */
     justify-content: space-between; /* main centrado, footer abajo */
     min-height: 100vh;
     margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #FBFBFB; /* Fondo claro */
+    font-family: "Lexend Deca" , sans-serif;
+    background-color: #FBFBFB; /* Color de fondo claro */
 }
 
 main {
