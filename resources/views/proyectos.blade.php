@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Proyectos</title>
-    <link rel="stylesheet" href="css/proyectosss.css">
+    <link rel="stylesheet" href="css/proyectos.css">
     <link rel="stylesheet" href="css/style.css">
 
 </head>
@@ -37,12 +37,9 @@
                 <div class="project-grid" id="projectGrid">
                 </div>
             </div>
-
-
         </div>
     </main>
 </body>
 <script src="proyectos.js"></script>
-
 
 </html>
