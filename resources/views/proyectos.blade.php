@@ -5,9 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Proyectos</title>
-    <link rel="stylesheet" href="css/proyectos.css">
+    <link rel="stylesheet" href="css/proyectosss.css">
     <link rel="stylesheet" href="css/style.css">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 </head>
 
@@ -29,7 +28,9 @@
                 <div class="sidebar-content">
                     <div class="sidebar-item"></div>
                 </div>
-                <button class="btn-crear" onclick="crearProyecto()">Crear</button>
+                <a href="{{ route('createproyecto') }}">
+                    <button class="btn-crear" >Crear</button>
+                </a>
             </div>
 
             <div class="main-content">
@@ -37,9 +38,7 @@
                 </div>
             </div>
 
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                ...
-            </div>
+
         </div>
     </main>
 </body>
