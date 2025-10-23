@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap" rel="stylesheet">
@@ -27,10 +28,13 @@
         <h1>Welcome to Katalist</h1>
         <p>Your ultimate platform for managing and organizing your projects efficiently.</p>
         <div id="logoContainer">
-            <img id="logo" src="../images/projects.png" alt="Katalist Logo">
+            <img id="logo" src="../img/projects.png" alt="Katalist Logo">
         </div>
 
-        <button id="getStarted">Get Started</button>
+        <a href="{{ route('register') }}">
+            <button id="getStarted">Get Started</button>
+        </a>
+        
 
     </div>
 
