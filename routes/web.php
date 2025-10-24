@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProyectoController;
 
 Route::get('/', function () {
     return view('index');
@@ -19,6 +20,8 @@ Route::get('/login', function () {
     return view('login'); 
 })->name('login');
 
-Route::get('/createproyecto', function () {
-    return view('createproyecto'); 
-})->name('createproyecto');
+Route::get('/create', function () {
+    return view('create'); 
+})->name('create');
+
+Route::post('/proyectos/store', [ProyectoController::class, 'store'])->name('proyectos.store');
