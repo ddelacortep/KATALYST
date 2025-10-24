@@ -12,7 +12,8 @@ class ProyectoController extends Controller
      */
     public function index()
     {
-        //
+        $proyectos = Proyecto::all();
+        return view('proyectos', compact('proyectos'));
     }
 
     /**
@@ -20,7 +21,7 @@ class ProyectoController extends Controller
      */
     public function create()
     {
-        //
+        return view('create');
     }
 
     /**
@@ -28,7 +29,12 @@ class ProyectoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $proyecto = new Proyecto();
+        $proyecto->nom = $request->input('nombre_del_proyecto');
+        $proyecto->colaboradores = $request->input('colaboradores');
+
+        $proyecto->save();
+        return redirect()->route('proyectos')->with('success', 'Proyecto creado correctamente');
     }
 
     /**

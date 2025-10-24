@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Participar;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -21,8 +22,6 @@ class Proyecto extends Model
     {
         return $this->hasMany(Participar::class, 'id_proyecto');
     }
-
-    protected $fillable = ['nom_proyecto'];
 
     public function usuarios()
     {
