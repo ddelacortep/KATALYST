@@ -5,12 +5,18 @@
 }
 
 body {
-    font-family: "Lexend Deca" , sans-serif;
-    min-height: 100vh;
+    font-family: "Lexend Deca", sans-serif;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     background: linear-gradient(135deg, #FBFBFB 0%, #ffffff 100%);
     color: #333;
+    overflow: hidden;
+}
+
+/* Asegurar que todos los elementos usen la fuente correcta */
+button, p, h1, h2, a {
+    font-family: "Lexend Deca", sans-serif;
 }
 
 header {
@@ -58,6 +64,8 @@ header button:hover {
     font-size: 16px;
     font-weight: 600;
     color: #000000;
+    margin: 0;
+    padding: 0;
 }
 
 #main {
@@ -67,19 +75,20 @@ header button:hover {
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 50px 20px;
+    padding: 20px;
+    gap: 15px;
 }
 
 #main h1 {
-    font-size: 48px;
+    font-size: 38px;
     color: rgb(0, 0, 0);
-    margin-bottom: 20px;
+    margin: 0;
 }
 
 #main p {
-    font-size: 20px;
+    font-size: 18px;
     color: rgba(0, 0, 0, 0.9);
-    margin-bottom: 30px;
+    margin: 0;
     max-width: 600px;
 }
 
@@ -87,13 +96,14 @@ header button:hover {
     background-color: white;
     color: #000000;
     border: none;
-    padding: 15px 40px;
-    font-size: 18px;
+    padding: 12px 35px;
+    font-size: 16px;
     font-weight: bold;
     border-radius: 30px;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    font-family: "Lexend Deca", sans-serif;
 }
 
 #getStarted:hover {
@@ -105,20 +115,31 @@ header button:hover {
 #logoContainer {
     background-color: #67B0AD;
     backdrop-filter: blur(10px);
-    padding: 30px;
+    padding: 20px;
     border-radius: 20px;
-    margin-bottom: 30px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 #logo {
-    width: 700px; /* Tamaño base para web */
-    height: auto; /* Mantiene la proporción de la imagen */
-    max-width: 100%; /* Evita que la imagen se desborde del contenedor */
-    display: block; /* Elimina espacios extra debajo de la imagen */
-    margin: 0 auto; /* Centra la imagen horizontalmente */
+    width: 800px; /* Tamaño reducido para que todo quepa sin scroll */
+    height: auto;
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
     border-radius: 10px;
+}
+
+footer {
+    padding: 15px;
+    text-align: center;
+    background-color: #67B0AD;
+    color: white;
+    font-size: 14px;
+}
+
+footer p {
+    margin: 0;
 }
 
 @media (max-width: 768px) {
