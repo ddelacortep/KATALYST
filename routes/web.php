@@ -8,9 +8,7 @@ Route::get('/', function () {
 })->name('index');
 
 // Página de inicio
-Route::get('/proyectos', function () {
-    return view('proyectos'); // resources/views/proyectos.blade.php
-})->name('proyectos');
+Route::get('/proyectos', [ProyectoController::class, 'index'])->name('proyectos');
 
 Route::get('/register', function () {
     return view('register');
