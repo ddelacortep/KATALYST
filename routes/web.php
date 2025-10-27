@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProyectoController;
+use App\Http\Controllers\RegisterController;
 
 Route::get('/', function () {
     return view('index');
@@ -25,3 +26,5 @@ Route::get('/create', function () {
 })->name('create');
 
 Route::post('/proyectos/store', [ProyectoController::class, 'store'])->name('proyectos.store');
+
+Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
