@@ -29,15 +29,26 @@
         <div>
             <img src="img/logo.png" alt="Logo de la aplicación">
 
-            <form action="#" method="POST">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-                <label for="">Usuario</label>
-                <input type="text" placeholder="Username" required>
+            <form action="{{ route('login.post') }}" method="POST">
+                @csrf
 
-                <label for="">Contraseña</label>
-                <input type="password" placeholder="password" required>
+                <label for="username">Usuario o Email</label>
+                <input type="text" name="username" placeholder="Username o Email" value="{{ old('username') }}" required>
 
-                <button id="submit">CONFIRMAR</button>
+                <label for="password">Contraseña</label>
+                <input type="password" name="password" placeholder="password" required>
+
+                <button id="submit" type="submit">CONFIRMAR</button>
 
             </form>
 
