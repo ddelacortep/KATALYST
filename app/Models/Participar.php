@@ -11,7 +11,7 @@ class Participar extends Model
     public $timestamps = false;
     public $incrementing = false;
 
-    protected $fillable = ['id_usuario', 'id_proyecto', 'id_rol'];
+    protected $fillable = ['id_usuario', 'id_proyecto', 'id_rols'];
 
     public function usuario()
     {

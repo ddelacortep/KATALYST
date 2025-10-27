@@ -31,6 +31,47 @@ body {
     margin-bottom: 20px;
 }
 
+.user-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.username-display {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.btn-logout {
+    background-color: #ff4757;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.btn-logout:hover {
+    background-color: #ee5a6f;
+    transform: scale(1.1);
+}
+
+.btn-logout:active {
+    background-color: #d63447;
+    transform: scale(0.95);
+}
+
+.btn-logout svg {
+    pointer-events: none;
+}
+
 .logo {
     width: 70px;
     height: 70px;
@@ -115,9 +156,11 @@ body {
     height: 100px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 15px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
+    position: relative;
 }
 
 .project-card:hover {
@@ -126,7 +169,7 @@ body {
 }
 
 .project-card-content {
-    width: 100%;
+    flex: 1;
     overflow: hidden;
 }
 
@@ -148,6 +191,43 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* Formulario de eliminación */
+.delete-form {
+    margin: 0;
+    padding: 0;
+}
+
+/* Botón de eliminar */
+.btn-delete {
+    background-color: #ff4757;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+}
+
+.btn-delete:hover {
+    background-color: #ee5a6f;
+    transform: scale(1.1);
+}
+
+.btn-delete:active {
+    background-color: #d63447;
+    transform: scale(0.95);
+}
+
+.btn-delete svg {
+    pointer-events: none;
 }
 
 .btn-crear {
