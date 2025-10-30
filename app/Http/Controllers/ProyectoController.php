@@ -40,28 +40,29 @@ class ProyectoController extends Controller
             return redirect()->route('login')->with('error', 'Debes iniciar sesión para crear un proyecto.');
         }
 
+        // Validar datos
+        $request->validate([
+            'nombre_del_proyecto' => 'required|string|max:255',
+            'usuario' => 'nullable|string|max:255',
+        ]);
+
         // Obtener el ID del usuario autenticado
         $usuarioAutenticadoId = Session::get('usuario_id');
 
-        // Obtener el siguiente ID disponible
+        // Obtener el siguiente ID disponible para el proyecto
         $nextId = DB::table('proyecto')->max('id_proyecto') + 1;
         
+        // Crear el proyecto
         $proyecto = new Proyecto();
         $proyecto->id_proyecto = $nextId;
         $proyecto->nom_proyecto = $request->input('nombre_del_proyecto');
-        
         $proyecto->save();
         
-        // Obtener el primer rol disponible o crear uno por defecto
-        $rol = Rols::first();
-        
-        if (!$rol) {
-            // Si no existe ningún rol, crear uno por defecto
-            $rol = new Rols();
-            $rol->id_rols = 1;
-            $rol->nom_rols = 'Administrador';
-            $rol->save();
-        }
+        // Obtener o crear rol por defecto
+        $rol = Rols::firstOrCreate(
+            ['id_rols' => 1],
+            ['nom_rols' => 'Administrador']
+        );
         
         // Asignar automáticamente el usuario autenticado como creador del proyecto
         $participar = new Participar();
@@ -70,12 +71,11 @@ class ProyectoController extends Controller
         $participar->id_rols = $rol->id_rols;
         $participar->save();
         
-        // Obtener o crear colaboradores adicionales solo si se proporcionó
+        // Agregar colaboradores adicionales si se proporcionó
         $usuarioInput = $request->input('usuario');
         
-        // Solo procesar colaboradores adicionales si se proporcionó un valor
         if (!empty($usuarioInput) && $usuarioInput != $usuarioAutenticadoId) {
-            // Intentar buscar el usuario por ID o por nombre
+            // Buscar el usuario colaborador
             $usuario = Usuario::where('id_usuario', $usuarioInput)
                              ->orWhere('nom_usuario', $usuarioInput)
                              ->first();

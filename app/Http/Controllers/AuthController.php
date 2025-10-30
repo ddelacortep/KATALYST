@@ -75,8 +75,8 @@ class AuthController extends Controller
 
         // Buscar el usuario
         $usuario = Usuario::where('nom_usuario', $request->username)
-                         ->orWhere('email', $request->username)
-                         ->first();
+                        ->orWhere('email', $request->username)
+                        ->first();
 
         // Verificar si el usuario existe
         if (!$usuario) {
