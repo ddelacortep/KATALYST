@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tareas;
+use App\Helpers\PermisosHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -30,29 +31,78 @@ class TareasController extends Controller
     {
         $request->validate([
             'nom_tarea' => 'required|string|max:255',
-            'descripcion_tarea' => 'nullable|string',
             'id_proyecto' => 'required|integer|exists:proyecto,id_proyecto',
-            'id_usuario' => 'nullable|integer|exists:usuario,id_usuario',
-            'id_estado' => 'nullable|integer|exists:estado_tarea,id_estado',
+            'id_usuario' => 'nullable|integer|exists:usuario,id_usuario'
         ]);
 
-        // Obtener el siguiente ID disponible
-        $nextId = DB::table('tareas')->max('id_tareas') + 1;
+        // Verificar permisos para crear tareas
+        if (!PermisosHelper::puedeCrearTareas($request->id_proyecto)) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tienes permisos para crear tareas en este proyecto'
+                ], 403);
+            }
+            return redirect()->back()->with('error', 'No tienes permisos para crear tareas en este proyecto');
+        }
 
-        $tarea = new Tareas();
-        $tarea->id_tareas = $nextId;
-        $tarea->nom_tarea = $request->nom_tarea;
-        $tarea->descripcion_tarea = $request->descripcion_tarea;
-        $tarea->id_proyecto = $request->id_proyecto;
-        $tarea->id_usuario = $request->id_usuario ?? Session::get('usuario_id');
-        $tarea->id_estado = $request->id_estado ?? 1; // Estado por defecto: Pendiente
-        $tarea->save();
+        // Usar transacción para crear tarea y estado juntos
+        DB::beginTransaction();
+        
+        try {
+            // Obtener el siguiente ID disponible para tarea
+            $nextTareaId = DB::table('tareas')->max('id_tarea') + 1;
+            
+            // Obtener el siguiente ID disponible para estado
+            $nextEstadoId = DB::table('estado_tarea')->max('id_estado') + 1;
+            
+            // Crear el estado primero
+            DB::table('estado_tarea')->insert([
+                'id_estado' => $nextEstadoId,
+                'nom_estat' => 'Pendiente',
+                'id_tarea' => $nextTareaId
+            ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Tarea creada correctamente',
-            'tarea' => $tarea
-        ], 201);
+            // Crear la tarea
+            $tarea = new Tareas();
+            $tarea->id_tarea = $nextTareaId;
+            $tarea->nom_tarea = $request->nom_tarea;
+            $tarea->id_proyecto = $request->id_proyecto;
+            $tarea->id_estados = $nextEstadoId;
+            
+            // Si es editor, solo puede asignarse tareas a sí mismo
+            $usuarioId = Session::get('id_usuario');
+            if (PermisosHelper::esEditor($request->id_proyecto, $usuarioId)) {
+                $tarea->id_usuario = $usuarioId;
+            } else {
+                $tarea->id_usuario = $request->id_usuario ?? $usuarioId;
+            }
+            
+            $tarea->save();
+            
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error al crear la tarea: ' . $e->getMessage()
+                ], 500);
+            }
+            return redirect()->back()->with('error', 'Error al crear la tarea');
+        }
+
+        // Si es una petición AJAX
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Tarea creada correctamente',
+                'tarea' => $tarea
+            ], 201);
+        }
+
+        // Si es una petición normal
+        return redirect()->back()->with('success', 'Tarea creada correctamente');
     }
 
     /**
@@ -80,42 +130,51 @@ class TareasController extends Controller
         $tarea = Tareas::find($id);
         
         if (!$tarea) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Tarea no encontrada'
-            ], 404);
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tarea no encontrada'
+                ], 404);
+            }
+            return redirect()->back()->with('error', 'Tarea no encontrada');
+        }
+
+        // Verificar permisos para editar
+        if (!PermisosHelper::puedeEditarTarea($tarea)) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tienes permisos para editar esta tarea'
+                ], 403);
+            }
+            return redirect()->back()->with('error', 'No tienes permisos para editar esta tarea');
         }
 
         $request->validate([
             'nom_tarea' => 'sometimes|required|string|max:255',
-            'descripcion_tarea' => 'nullable|string',
-            'id_usuario' => 'sometimes|integer|exists:usuario,id_usuario',
-            'id_estado' => 'sometimes|integer|exists:estado_tarea,id_estado',
+            'id_usuario' => 'sometimes|integer|exists:usuario,id_usuario'
         ]);
 
         if ($request->has('nom_tarea')) {
             $tarea->nom_tarea = $request->nom_tarea;
         }
         
-        if ($request->has('descripcion_tarea')) {
-            $tarea->descripcion_tarea = $request->descripcion_tarea;
-        }
-        
-        if ($request->has('id_usuario')) {
+        // Solo administrador puede reasignar tareas
+        if ($request->has('id_usuario') && PermisosHelper::esAdministrador($tarea->id_proyecto)) {
             $tarea->id_usuario = $request->id_usuario;
-        }
-        
-        if ($request->has('id_estado')) {
-            $tarea->id_estado = $request->id_estado;
         }
 
         $tarea->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Tarea actualizada correctamente',
-            'tarea' => $tarea
-        ]);
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Tarea actualizada correctamente',
+                'tarea' => $tarea
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Tarea actualizada correctamente');
     }
 
     /**
@@ -126,17 +185,55 @@ class TareasController extends Controller
         $tarea = Tareas::find($id);
         
         if (!$tarea) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Tarea no encontrada'
-            ], 404);
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tarea no encontrada'
+                ], 404);
+            }
+            return redirect()->back()->with('error', 'Tarea no encontrada');
         }
 
-        $tarea->delete();
+        // Verificar permisos para eliminar
+        if (!PermisosHelper::puedeEliminarTarea($tarea->id_proyecto)) {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Solo el administrador puede eliminar tareas'
+                ], 403);
+            }
+            return redirect()->back()->with('error', 'Solo el administrador puede eliminar tareas');
+        }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Tarea eliminada correctamente'
-        ]);
+        // Eliminar tarea y su estado asociado en una transacción
+        DB::beginTransaction();
+        
+        try {
+            // Eliminar el estado asociado
+            DB::table('estado_tarea')->where('id_tarea', $tarea->id_tarea)->delete();
+            
+            // Eliminar la tarea
+            $tarea->delete();
+            
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error al eliminar la tarea: ' . $e->getMessage()
+                ], 500);
+            }
+            return redirect()->back()->with('error', 'Error al eliminar la tarea');
+        }
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Tarea eliminada correctamente'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Tarea eliminada correctamente');
     }
 }

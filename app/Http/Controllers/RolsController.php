@@ -14,7 +14,14 @@ class RolsController extends Controller
     public function index()
     {
         $roles = Rols::all();
-        return response()->json($roles);
+        
+        // Si es una petición AJAX, devolver JSON
+        if (request()->expectsJson()) {
+            return response()->json($roles);
+        }
+        
+        // Si no, devolver vista
+        return view('roles.index', compact('roles'));
     }
 
     /**
@@ -34,11 +41,17 @@ class RolsController extends Controller
         $rol->nom_rols = $request->nom_rols;
         $rol->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Rol creado correctamente',
-            'rol' => $rol
-        ], 201);
+        // Si es una petición AJAX
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Rol creado correctamente',
+                'rol' => $rol
+            ], 201);
+        }
+
+        // Si es una petición normal
+        return redirect()->back()->with('success', 'Rol creado correctamente');
     }
 
     /**

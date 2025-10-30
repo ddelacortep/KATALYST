@@ -42,7 +42,11 @@
         <div class="content">
             <div class="sidebar">
                 <div class="sidebar-content">
-                    <div class="sidebar-item"></div>
+                    <a href="{{ route('roles.index') }}" class="sidebar-link">
+                        <div class="sidebar-item sidebar-item-roles">
+                            <span>⚙️ Gestionar Roles</span>
+                        </div>
+                    </a>
                 </div>
                 <a href="{{ route('create') }}">
                     <button class="btn-crear">Crear</button>
@@ -54,12 +58,14 @@
                     @if(isset($proyectos))
                         @foreach($proyectos as $proyecto)
                             <div class="project-card">
-                                <div class="project-card-content">
-                                    <h3 class="project-title">{{ $proyecto->nom_proyecto }}</h3>
-                                    @if(isset($proyecto->colaboradores))
-                                        <p class="project-colaboradores">{{ $proyecto->colaboradores }}</p>
-                                    @endif
-                                </div>
+                                <a href="{{ route('proyectos.show', $proyecto->id_proyecto) }}" class="project-link">
+                                    <div class="project-card-content">
+                                        <h3 class="project-title">{{ $proyecto->nom_proyecto }}</h3>
+                                        @if(isset($proyecto->colaboradores))
+                                            <p class="project-colaboradores">{{ $proyecto->colaboradores }}</p>
+                                        @endif
+                                    </div>
+                                </a>
                                 <form action="{{ route('proyectos.destroy', $proyecto->id_proyecto) }}" method="POST" class="delete-form" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este proyecto?');">
                                     @csrf
                                     @method('DELETE')

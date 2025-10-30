@@ -126,10 +126,35 @@ body {
     gap: 15px;
 }
 
+.sidebar-link {
+    text-decoration: none;
+}
+
 .sidebar-item {
     background-color: #d4d4d4;
     border-radius: 8px;
     height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s, transform 0.2s;
+    cursor: pointer;
+}
+
+.sidebar-item:hover {
+    background-color: #c4c4c4;
+    transform: translateX(5px);
+}
+
+.sidebar-item-roles {
+    background: linear-gradient(135deg, #7dd3c0 0%, #6bc2af 100%);
+    font-weight: bold;
+    color: #2c5f56;
+    font-size: 16px;
+}
+
+.sidebar-item-roles:hover {
+    background: linear-gradient(135deg, #6bc2af 0%, #5ab09d 100%);
 }
 
 .main-content {
@@ -158,7 +183,6 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 15px;
-    cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
     position: relative;
 }
@@ -166,6 +190,15 @@ body {
 .project-card:hover {
     background-color: #c4c4c4;
     transform: translateY(-2px);
+}
+
+.project-link {
+    flex: 1;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    height: 100%;
 }
 
 .project-card-content {
@@ -197,6 +230,7 @@ body {
 .delete-form {
     margin: 0;
     padding: 0;
+    margin-left: 10px;
 }
 
 /* Botón de eliminar */
