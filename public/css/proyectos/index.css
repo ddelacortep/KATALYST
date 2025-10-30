@@ -128,6 +128,11 @@ body {
 
 .sidebar-link {
     text-decoration: none;
+    background: none;
+    border: none;
+    width: 100%;
+    padding: 0;
+    cursor: pointer;
 }
 
 .sidebar-item {
@@ -146,15 +151,20 @@ body {
     transform: translateX(5px);
 }
 
-.sidebar-item-roles {
-    background: linear-gradient(135deg, #7dd3c0 0%, #6bc2af 100%);
+.sidebar-item-favoritos {
+    background: linear-gradient(135deg, #ffd93d 0%, #ffbc1f 100%);
     font-weight: bold;
-    color: #2c5f56;
+    color: #8b6914;
     font-size: 16px;
 }
 
-.sidebar-item-roles:hover {
-    background: linear-gradient(135deg, #6bc2af 0%, #5ab09d 100%);
+.sidebar-item-favoritos:hover {
+    background: linear-gradient(135deg, #ffbc1f 0%, #ffa500 100%);
+}
+
+.sidebar-item-favoritos.active {
+    background: linear-gradient(135deg, #ff9500 0%, #ff7b00 100%);
+    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.4);
 }
 
 .main-content {
@@ -187,9 +197,41 @@ body {
     position: relative;
 }
 
+.project-card.hidden {
+    display: none;
+}
+
 .project-card:hover {
     background-color: #c4c4c4;
     transform: translateY(-2px);
+}
+
+/* Botón de favorito */
+.btn-favorito {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    transition: transform 0.2s;
+    z-index: 10;
+}
+
+.btn-favorito:hover {
+    transform: scale(1.2);
+}
+
+.btn-favorito .star-icon {
+    stroke: #ffd700;
+    fill: none;
+    transition: fill 0.3s;
+}
+
+.btn-favorito.active .star-icon {
+    fill: #ffd700;
+    stroke: #ffa500;
 }
 
 .project-link {

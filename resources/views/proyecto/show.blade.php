@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $proyecto->nom_proyecto }} - KATALYST</title>
-    <link rel="stylesheet" href="{{ asset('css/proyecto-show.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/proyectos/proyecto-show.css') }}">
 </head>
 <body>
     <div class="container">
@@ -284,6 +284,6 @@
         </div>
     </div>
 
-    <script src="{{ asset('js/proyecto-show.js') }}"></script>
+    <script src="{{ asset('js/proyectos/show.js') }}"></script>
 </body>
 </html>

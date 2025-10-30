@@ -1,0 +1,147 @@
+╔════════════════════════════════════════════════════════════════╗
+║          ✅ CAMBIOS IMPLEMENTADOS - FAVORITOS                  ║
+╚════════════════════════════════════════════════════════════════╝
+
+📋 RESUMEN DE CAMBIOS
+
+┌─────────────────────────────────────────────────────────────┐
+│ 1️⃣  ELIMINACIÓN DE GESTIÓN DE ROLES STANDALONE              │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│ ❌ Eliminado: Enlace "⚙️ Gestionar Roles" de proyectos    │
+│ ❌ Eliminada: Ruta GET /roles                              │
+│ ✅ Los roles ahora SOLO se gestionan dentro del proyecto   │
+│    (en la pestaña "Roles" del detalle del proyecto)        │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ 2️⃣  NUEVO SISTEMA DE FAVORITOS                              │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│ ⭐ Botón "Favoritos" en el sidebar                         │
+│    • Click para filtrar solo proyectos favoritos           │
+│    • Click de nuevo para mostrar todos                     │
+│    • Cambia entre "⭐ Favoritos" y "⭐ Todos"              │
+│                                                             │
+│ ⭐ Botón de estrella en cada proyecto                      │
+│    • Click para agregar/quitar de favoritos                │
+│    • Estrella rellena = favorito                           │
+│    • Estrella vacía = no favorito                          │
+│                                                             │
+│ 💾 Persistencia con localStorage                           │
+│    • Los favoritos se guardan localmente                   │
+│    • Se mantienen al recargar la página                    │
+│    • Específicos por navegador/dispositivo                 │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ 📁 ARCHIVOS MODIFICADOS                                     │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│ 📄 resources/views/proyectos.blade.php                     │
+│    • Reemplazado enlace "Gestionar Roles" por botón        │
+│      "Favoritos"                                            │
+│    • Agregado botón de estrella en cada tarjeta            │
+│    • Agregado atributo data-proyecto-id                    │
+│    • Agregada referencia a index.js                        │
+│                                                             │
+│ 🎨 public/css/proyectos/index.css                          │
+│    • Eliminados estilos .sidebar-item-roles                │
+│    • Agregados estilos .sidebar-item-favoritos             │
+│    • Agregados estilos .btn-favorito                       │
+│    • Agregada clase .hidden para filtrado                  │
+│    • Estilos para estrella activa/inactiva                 │
+│                                                             │
+│ ⚡ public/js/proyectos/index.js                            │
+│    • Agregada función toggleFavorito()                     │
+│    • Agregada función toggleFavoritos()                    │
+│    • Agregada función filtrarProyectos()                   │
+│    • Agregada función cargarFavoritos()                    │
+│    • Integración con localStorage                          │
+│                                                             │
+│ 🛣️  routes/web.php                                          │
+│    • Eliminada ruta GET /roles (roles.index)               │
+│    • Mantenidas rutas POST/PUT/DELETE para roles           │
+│    • Comentario aclarando que roles solo están en proyecto │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ 🎯 FUNCIONALIDADES                                          │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│ ✨ Gestión de Roles:                                        │
+│    ✅ Solo disponible dentro del proyecto                  │
+│    ✅ Pestaña "Roles" en proyecto/show.blade.php           │
+│    ✅ No hay acceso desde página principal                 │
+│                                                             │
+│ ⭐ Sistema de Favoritos:                                   │
+│    ✅ Marcar proyectos como favoritos                      │
+│    ✅ Filtrar vista por favoritos                          │
+│    ✅ Persistencia local (localStorage)                    │
+│    ✅ Feedback visual (estrella rellena/vacía)             │
+│    ✅ Botón toggle en sidebar                              │
+│                                                             │
+│ 🎨 Diseño:                                                  │
+│    ✅ Colores consistentes (#67B0AD)                        │
+│    ✅ Estrella dorada (#ffd700) para favoritos             │
+│    ✅ Animaciones suaves                                    │
+│    ✅ Hover effects                                         │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ 🔄 FLUJO DE USO                                             │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│ 1. Usuario ve todos los proyectos                          │
+│    └─> Click en estrella para marcar favorito              │
+│                                                             │
+│ 2. Usuario hace click en "⭐ Favoritos"                    │
+│    └─> Solo muestra proyectos con estrella                 │
+│    └─> Botón cambia a "⭐ Todos los proyectos"            │
+│                                                             │
+│ 3. Usuario hace click de nuevo                             │
+│    └─> Muestra todos los proyectos                         │
+│    └─> Botón vuelve a "⭐ Favoritos"                       │
+│                                                             │
+│ 4. Favoritos se guardan automáticamente                    │
+│    └─> Persisten al recargar la página                     │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ 📝 NOTAS TÉCNICAS                                           │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│ • localStorage guarda array de IDs de proyectos            │
+│ • Key: 'favoritos'                                          │
+│ • Format: ["1", "3", "5"]                                   │
+│                                                             │
+│ • event.stopPropagation() en btn-favorito                  │
+│   para evitar abrir el proyecto al hacer click             │
+│                                                             │
+│ • Clase .hidden con display: none para filtrado            │
+│                                                             │
+│ • Roles ahora SOLO en:                                     │
+│   /proyectos/{id} -> Pestaña "Roles"                       │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+
+╔════════════════════════════════════════════════════════════════╗
+║                    ✅ LISTO PARA PROBAR                        ║
+╚════════════════════════════════════════════════════════════════╝
+
+🚀 Prueba estas acciones:
+   1. Hacer click en la estrella de un proyecto
+   2. Ver que la estrella se rellena
+   3. Click en "⭐ Favoritos" del sidebar
+   4. Ver que solo muestra proyectos favoritos
+   5. Recargar la página
+   6. Verificar que los favoritos persisten
+   7. Intentar acceder a /roles directamente
+      (debería dar error 404 o redirigir)
+   8. Abrir un proyecto y verificar que la pestaña
+      "Roles" sigue funcionando

@@ -51,10 +51,10 @@ class TareasController extends Controller
         
         try {
             // Obtener el siguiente ID disponible para tarea
-            $nextTareaId = DB::table('tareas')->max('id_tarea') + 1;
+            $nextTareaId = (DB::table('tareas')->max('id_tarea') ?? 0) + 1;
             
             // Obtener el siguiente ID disponible para estado
-            $nextEstadoId = DB::table('estado_tarea')->max('id_estado') + 1;
+            $nextEstadoId = (DB::table('estado_tarea')->max('id_estado') ?? 0) + 1;
             
             // Crear el estado primero
             DB::table('estado_tarea')->insert([
@@ -70,12 +70,27 @@ class TareasController extends Controller
             $tarea->id_proyecto = $request->id_proyecto;
             $tarea->id_estados = $nextEstadoId;
             
+            // Obtener el ID del usuario de la sesión
+            $usuarioId = Session::get('usuario_id');
+            
+            // Validar que el usuario esté en sesión
+            if (!$usuarioId) {
+                throw new \Exception('No se pudo obtener el ID del usuario de la sesión. Por favor, inicia sesión nuevamente.');
+            }
+            
+            // Obtener el id_usuario del request (puede venir como string vacío)
+            $idUsuarioRequest = $request->id_usuario;
+            
             // Si es editor, solo puede asignarse tareas a sí mismo
-            $usuarioId = Session::get('id_usuario');
             if (PermisosHelper::esEditor($request->id_proyecto, $usuarioId)) {
                 $tarea->id_usuario = $usuarioId;
             } else {
-                $tarea->id_usuario = $request->id_usuario ?? $usuarioId;
+                // Administrador: si no selecciona usuario o selecciona "Sin asignar", asignar a sí mismo
+                if (empty($idUsuarioRequest)) {
+                    $tarea->id_usuario = $usuarioId;
+                } else {
+                    $tarea->id_usuario = $idUsuarioRequest;
+                }
             }
             
             $tarea->save();
