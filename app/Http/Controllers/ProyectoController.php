@@ -131,7 +131,7 @@ class ProyectoController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Proyecto $proyecto)
+    public function edit($id)
     {
         //
     }
@@ -139,7 +139,7 @@ class ProyectoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Proyecto $proyecto)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -149,118 +149,22 @@ class ProyectoController extends Controller
      */
     public function destroy($id)
     {
+        $proyecto = Proyecto::find($id);
+        
+        if (!$proyecto) {
+            return redirect()->route('proyectos')->with('error', 'Proyecto no encontrado');
+        }
+
+        // Verificar que el usuario sea administrador del proyecto
+        if (!PermisosHelper::esAdministrador($id)) {
+            return redirect()->route('proyectos')->with('error', 'Solo el administrador puede eliminar el proyecto');
+        }
+
         try {
-            // Primero eliminar las relaciones en la tabla participar
-            DB::table('participar')->where('id_proyecto', $id)->delete();
-            
-            // Luego eliminar las tareas asociadas al proyecto (si existen)
-            DB::table('tareas')->where('id_proyecto', $id)->delete();
-            
-            // Finalmente eliminar el proyecto
-            DB::table('proyecto')->where('id_proyecto', $id)->delete();
-            
+            $proyecto->delete();
             return redirect()->route('proyectos')->with('success', 'Proyecto eliminado correctamente');
         } catch (\Exception $e) {
-            return redirect()->route('proyectos')->with('error', 'Error al eliminar el proyecto: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * Agregar un usuario al proyecto
-     */
-    public function agregarUsuario(Request $request, $id)
-    {
-        // Verificar permisos
-        if (!PermisosHelper::puedeGestionarUsuarios($id)) {
-            return redirect()->back()->with('error', 'No tienes permisos para gestionar usuarios');
-        }
-
-        $request->validate([
-            'id_usuario' => 'required|exists:usuario,id_usuario',
-            'id_rol' => 'required|exists:roles,id_rols',
-        ]);
-
-        // Verificar si el usuario ya está en el proyecto
-        $existe = Participar::where('id_usuario', $request->id_usuario)
-            ->where('id_proyecto', $id)
-            ->exists();
-
-        if ($existe) {
-            return redirect()->back()->with('error', 'El usuario ya participa en este proyecto');
-        }
-
-        $participar = new Participar();
-        $participar->id_usuario = $request->id_usuario;
-        $participar->id_proyecto = $id;
-        $participar->id_rols = $request->id_rol;
-        $participar->save();
-
-        return redirect()->back()->with('success', 'Usuario agregado al proyecto correctamente');
-    }
-
-    /**
-     * Eliminar un usuario del proyecto
-     */
-    public function eliminarUsuario($proyectoId, $usuarioId)
-    {
-        // Verificar permisos
-        if (!PermisosHelper::puedeGestionarUsuarios($proyectoId)) {
-            return redirect()->back()->with('error', 'No tienes permisos para gestionar usuarios');
-        }
-
-        // Verificar que el usuario a eliminar no sea administrador
-        $participacion = Participar::where('id_proyecto', $proyectoId)
-            ->where('id_usuario', $usuarioId)
-            ->first();
-
-        if ($participacion && $participacion->id_rols == PermisosHelper::ROL_ADMINISTRADOR) {
-            return redirect()->back()->with('error', 'No se puede eliminar al administrador del proyecto');
-        }
-
-        try {
-            DB::table('participar')
-                ->where('id_proyecto', $proyectoId)
-                ->where('id_usuario', $usuarioId)
-                ->delete();
-
-            return redirect()->back()->with('success', 'Usuario eliminado del proyecto');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error al eliminar el usuario del proyecto');
-        }
-    }
-
-    /**
-     * Actualizar el rol de un usuario en el proyecto
-     */
-    public function actualizarRolUsuario(Request $request, $proyectoId, $usuarioId)
-    {
-        // Verificar permisos
-        if (!PermisosHelper::puedeGestionarUsuarios($proyectoId)) {
-            return redirect()->back()->with('error', 'No tienes permisos para gestionar usuarios');
-        }
-
-        $request->validate([
-            'id_rol' => 'required|exists:roles,id_rols',
-        ]);
-
-        // Verificar que no se intente cambiar el rol del administrador
-        $participacion = Participar::where('id_proyecto', $proyectoId)
-            ->where('id_usuario', $usuarioId)
-            ->first();
-
-        if ($participacion && $participacion->id_rols == PermisosHelper::ROL_ADMINISTRADOR) {
-            return redirect()->back()->with('error', 'No se puede cambiar el rol del administrador del proyecto');
-        }
-
-        try {
-            DB::table('participar')
-                ->where('id_proyecto', $proyectoId)
-                ->where('id_usuario', $usuarioId)
-                ->update(['id_rols' => $request->id_rol]);
-
-            return redirect()->back()->with('success', 'Rol actualizado correctamente');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error al actualizar el rol');
+            return redirect()->route('proyectos')->with('error', 'Error al eliminar el proyecto');
         }
     }
 }
