@@ -17,8 +17,13 @@ class Usuario extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $table = 'usuario';
+    protected $primaryKey = 'id_usuario';
+    public $incrementing = false;
+    protected $keyType = 'int';
     public $timestamps = false;
-    protected $fillable = ['nom_usuario', 'email', 'password'];
+    protected $fillable = ['id_usuario', 'nom_usuario', 'email', 'password'];
+    
+    protected $hidden = ['password'];
 
 
     public function tareas(): HasMany

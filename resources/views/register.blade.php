@@ -8,9 +8,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Register</title>
+<<<<<<< HEAD
     <link rel="icon" href="img/logo.png" type="image/png">
     <link rel="stylesheet" href="css/register.css">
     <link rel="stylesheet" href="css/style.css">
+=======
+    <link rel="stylesheet" href="{{ asset('css/auth/register.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+>>>>>>> main
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap" rel="stylesheet">
@@ -32,27 +37,37 @@
         <div class="logo-container">
             <img src="img/logo.png" alt="Imagen Katalyst">
         </div>
-        <div id="container">
-            <form action="" class="left-register">
-                <label for="">Nombre *</label>
-                <input type="text" placeholder="Nombre" required>
-                <label for="">Apellidos *</label>
-                <input type="text" placeholder="Apellidos" required>
-                <label for="">Username *</label>
-                <input type="text" placeholder="Username" required>
-            </form>
-            <form action="" class="right-register">
-                <label for="">Mail *</label>
-                <input type="mail" placeholder="Mail" required>
-                <label for="">Contraseña *</label>
-                <input type="password" placeholder="Contraseña" required>
-                <label for="">Confirmar Constraseña *</label>
-                <input type="password" placeholder="Confirmar Constraseña" required>
-            </form>
-        </div>
-        <form action="">
+        
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        
+        <form action="{{ route('register.post') }}" method="POST">
+            @csrf
+            <div id="container">
+                <div class="left-register">
+                    <label for="username">Username *</label>
+                    <input type="text" name="username" placeholder="Username" value="{{ old('username') }}" required>
+                    
+                    <label for="email">Email *</label>
+                    <input type="email" name="email" placeholder="Email" value="{{ old('email') }}" required>
+                </div>
+                <div class="right-register">
+                    <label for="password">Contraseña *</label>
+                    <input type="password" name="password" placeholder="Contraseña (mínimo 6 caracteres)" required>
+                    
+                    <label for="password_confirmation">Confirmar Contraseña *</label>
+                    <input type="password" name="password_confirmation" placeholder="Confirmar Contraseña" required>
+                </div>
+            </div>
             <div class="submit-div">
-                <button id="submit">Confirmar</button>
+                <button id="submit" type="submit">Confirmar</button>
             </div>
         </form>
     </main>

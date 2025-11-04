@@ -85,5 +85,3 @@ button[id="submit"] {
     cursor: pointer;
     background-color: transparent;
     border: none;
-    z-index: 100;          /* siempre encima del container */
-}

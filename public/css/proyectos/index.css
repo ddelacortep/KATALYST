@@ -31,6 +31,47 @@ body {
     margin-bottom: 20px;
 }
 
+.user-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.username-display {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.btn-logout {
+    background-color: #ff4757;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.btn-logout:hover {
+    background-color: #ee5a6f;
+    transform: scale(1.1);
+}
+
+.btn-logout:active {
+    background-color: #d63447;
+    transform: scale(0.95);
+}
+
+.btn-logout svg {
+    pointer-events: none;
+}
+
 .logo {
     width: 70px;
     height: 70px;
@@ -85,10 +126,45 @@ body {
     gap: 15px;
 }
 
+.sidebar-link {
+    text-decoration: none;
+    background: none;
+    border: none;
+    width: 100%;
+    padding: 0;
+    cursor: pointer;
+}
+
 .sidebar-item {
     background-color: #d4d4d4;
     border-radius: 8px;
     height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s, transform 0.2s;
+    cursor: pointer;
+}
+
+.sidebar-item:hover {
+    background-color: #c4c4c4;
+    transform: translateX(5px);
+}
+
+.sidebar-item-favoritos {
+    background: linear-gradient(135deg, #ffd93d 0%, #ffbc1f 100%);
+    font-weight: bold;
+    color: #8b6914;
+    font-size: 16px;
+}
+
+.sidebar-item-favoritos:hover {
+    background: linear-gradient(135deg, #ffbc1f 0%, #ffa500 100%);
+}
+
+.sidebar-item-favoritos.active {
+    background: linear-gradient(135deg, #ff9500 0%, #ff7b00 100%);
+    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.4);
 }
 
 .main-content {
@@ -115,9 +191,14 @@ body {
     height: 100px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 15px;
-    cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
+    position: relative;
+}
+
+.project-card.hidden {
+    display: none;
 }
 
 .project-card:hover {
@@ -125,8 +206,45 @@ body {
     transform: translateY(-2px);
 }
 
+/* Botón de favorito */
+.btn-favorito {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    transition: transform 0.2s;
+    z-index: 10;
+}
+
+.btn-favorito:hover {
+    transform: scale(1.2);
+}
+
+.btn-favorito .star-icon {
+    stroke: #ffd700;
+    fill: none;
+    transition: fill 0.3s;
+}
+
+.btn-favorito.active .star-icon {
+    fill: #ffd700;
+    stroke: #ffa500;
+}
+
+.project-link {
+    flex: 1;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
 .project-card-content {
-    width: 100%;
+    flex: 1;
     overflow: hidden;
 }
 
@@ -148,6 +266,44 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* Formulario de eliminación */
+.delete-form {
+    margin: 0;
+    padding: 0;
+    margin-left: 10px;
+}
+
+/* Botón de eliminar */
+.btn-delete {
+    background-color: #ff4757;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+}
+
+.btn-delete:hover {
+    background-color: #ee5a6f;
+    transform: scale(1.1);
+}
+
+.btn-delete:active {
+    background-color: #d63447;
+    transform: scale(0.95);
+}
+
+.btn-delete svg {
+    pointer-events: none;
 }
 
 .btn-crear {

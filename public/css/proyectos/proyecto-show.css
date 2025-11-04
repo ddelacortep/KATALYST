@@ -1,0 +1,521 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #FBFBFB 0%, #ffffff 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+header {
+    margin-bottom: 30px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 20px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+h1 {
+    color: #333;
+    font-size: 2rem;
+}
+
+.btn-back {
+    background: #67B0AD;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.3s;
+}
+
+.btn-back:hover {
+    background: #5a9996;
+}
+
+/* Alertas */
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+/* Pestañas */
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.tab-button {
+    padding: 12px 24px;
+    background: transparent;
+    border: none;
+    color: #666;
+    font-size: 1rem;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s;
+}
+
+.tab-button:hover {
+    color: #67B0AD;
+}
+
+.tab-button.active {
+    color: #67B0AD;
+    font-weight: bold;
+}
+
+.tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #67B0AD;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Sección Header */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    color: #333;
+    font-size: 1.5rem;
+}
+
+/* Botones */
+.btn-primary {
+    background: #67B0AD;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s;
+}
+
+.btn-primary:hover {
+    background: #5a9996;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.btn-icon {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 5px 10px;
+    transition: transform 0.2s;
+}
+
+.btn-icon:hover {
+    transform: scale(1.2);
+}
+
+.btn-danger {
+    color: #dc3545;
+}
+
+/* Tareas */
+.tareas-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.tarea-card {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #67B0AD;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.tarea-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.tarea-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 10px;
+}
+
+.tarea-header h3 {
+    color: #333;
+    font-size: 1.1rem;
+    flex: 1;
+}
+
+.badge {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.badge-1 {
+    background: #ffc107;
+    color: #000;
+}
+
+.badge-2 {
+    background: #17a2b8;
+    color: white;
+}
+
+.badge-3 {
+    background: #28a745;
+    color: white;
+}
+
+.tarea-descripcion {
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.tarea-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+}
+
+.tarea-usuario {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.tarea-actions {
+    display: flex;
+    gap: 5px;
+}
+
+/* Usuarios */
+.usuarios-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.usuario-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    transition: box-shadow 0.3s;
+}
+
+.usuario-card:hover {
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.usuario-info {
+    flex: 1;
+}
+
+.usuario-info h3 {
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.usuario-info p {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.usuario-rol {
+    flex: 0 0 200px;
+}
+
+.badge-rol {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.badge-1 {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    color: #000;
+}
+
+.badge-2 {
+    background: linear-gradient(135deg, #67B0AD 0%, #5a9996 100%);
+    color: white;
+}
+
+.badge-3 {
+    background: linear-gradient(135deg, #b0b0b0 0%, #9a9a9a 100%);
+    color: white;
+}
+
+.select-rol {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 0.95rem;
+}
+
+.usuario-actions {
+    flex: 0 0 auto;
+}
+
+.form-inline {
+    margin: 0;
+}
+
+/* Roles */
+.roles-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.rol-card {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.rol-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.rol-card h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.rol-card p {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.rol-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Mensaje vacío */
+.empty-message {
+    text-align: center;
+    color: #999;
+    padding: 40px;
+    font-size: 1.1rem;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.3s;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 20px;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+}
+
+.modal h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Formularios */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #67B0AD;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.help-text {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 10px 0;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    border-left: 3px solid #67B0AD;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    .header-content {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .tabs {
+        overflow-x: auto;
+    }
+
+    .tareas-list,
+    .roles-list {
+        grid-template-columns: 1fr;
+    }
+
+    .usuario-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .usuario-rol {
+        width: 100%;
+    }
+}

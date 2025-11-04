@@ -22,11 +22,11 @@
     <main class="container">
         <form action="{{ route('proyectos.store') }}" method="post">
             @csrf
-            <label for="">TÍTULO DEL PROYECTO</label>
-            <input type="text" placeholder="Nombre del proyecto" name="nombre_del_proyecto">
-            <label for="">AÑADIR COLABORADORES</label>
-            <input type="text" placeholder="Buscar colaborador" name="colaboradores">
-            <button id="submit" type="submit">Añadir</button>
+            <label for="nombre_del_proyecto">TÍTULO DEL PROYECTO</label>
+            <input type="text" placeholder="Nombre del proyecto" name="nombre_del_proyecto" required>
+            <label for="usuario">AÑADIR COLABORADORES (Opcional)</label>
+            <input type="text" placeholder="Buscar colaborador" name="usuario">
+            <button id="submit" type="submit">Crear Proyecto</button>
         </form>
     </main>
 </body>

@@ -9,9 +9,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Proyecto extends Model
 {
     protected $table = 'proyecto';
+    protected $primaryKey = 'id_proyecto';
+    public $incrementing = false; // Cambiado a false porque SQL Server no tiene IDENTITY configurado
+    protected $keyType = 'int';
     public $timestamps = false;
 
-   
+    protected $fillable = ['id_proyecto', 'nom_proyecto'];
+
     public function tareas(): HasMany
     {
         return $this->hasMany(Tareas::class, 'id_proyecto');

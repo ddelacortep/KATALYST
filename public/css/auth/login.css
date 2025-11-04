@@ -27,6 +27,28 @@ main {
     justify-content: center; /* Centra verticalmente el contenido */
 }
 
+/* Estilos para mensajes de error */
+.alert {
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.alert ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.alert li {
+    margin: 5px 0;
+}
+
 /*
  * --------------------------------
  * ESTILOS DEL HEADER (Botón Volver)
