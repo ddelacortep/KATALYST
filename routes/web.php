@@ -43,3 +43,4 @@ Route::get('/tareas/{id}', [TareasController::class, 'show'])->name('tareas.show
 Route::post('/roles', [RolsController::class, 'store'])->name('roles.store');
 Route::put('/roles/{id}', [RolsController::class, 'update'])->name('roles.update');
 Route::delete('/roles/{id}', [RolsController::class, 'destroy'])->name('roles.destroy');
+
