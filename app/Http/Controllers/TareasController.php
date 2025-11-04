@@ -7,6 +7,7 @@ use App\Helpers\PermisosHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 
 class TareasController extends Controller
 {
@@ -50,61 +51,100 @@ class TareasController extends Controller
         DB::beginTransaction();
         
         try {
+            // Obtener el ID del usuario de la sesión al inicio
+            $usuarioId = Session::get('usuario_id');
+            
+            Log::info('=== INICIO CREACIÓN DE TAREA ===');
+            Log::info('Request completo:', $request->all());
+            Log::info('Usuario en sesión:', ['usuario_id' => $usuarioId]);
+            
             // Obtener el siguiente ID disponible para tarea
             $nextTareaId = (DB::table('tareas')->max('id_tarea') ?? 0) + 1;
+            Log::info('Siguiente ID de tarea:', ['id_tarea' => $nextTareaId]);
             
             // Obtener el siguiente ID disponible para estado
             $nextEstadoId = (DB::table('estado_tarea')->max('id_estado') ?? 0) + 1;
-            
-            // Crear el estado primero
-            DB::table('estado_tarea')->insert([
-                'id_estado' => $nextEstadoId,
-                'nom_estat' => 'Pendiente',
-                'id_tarea' => $nextTareaId
-            ]);
+            Log::info('Siguiente ID de estado:', ['id_estado' => $nextEstadoId]);
 
-            // Crear la tarea
-            $tarea = new Tareas();
-            $tarea->id_tarea = $nextTareaId;
-            $tarea->nom_tarea = $request->nom_tarea;
-            $tarea->id_proyecto = $request->id_proyecto;
-            $tarea->id_estados = $nextEstadoId;
-            
-            // Obtener el ID del usuario de la sesión
-            $usuarioId = Session::get('usuario_id');
-            
             // Validar que el usuario esté en sesión
             if (!$usuarioId) {
+                Log::error('No hay usuario en sesión');
                 throw new \Exception('No se pudo obtener el ID del usuario de la sesión. Por favor, inicia sesión nuevamente.');
             }
             
             // Obtener el id_usuario del request (puede venir como string vacío)
             $idUsuarioRequest = $request->id_usuario;
+            Log::info('ID usuario del request:', ['id_usuario' => $idUsuarioRequest]);
+            
+            // Determinar quién será asignado a la tarea
+            $idUsuarioFinal = null;
             
             // Si es editor, solo puede asignarse tareas a sí mismo
             if (PermisosHelper::esEditor($request->id_proyecto, $usuarioId)) {
-                $tarea->id_usuario = $usuarioId;
+                $idUsuarioFinal = $usuarioId;
+                Log::info('Editor asignándose a sí mismo:', ['id_usuario_final' => $idUsuarioFinal]);
             } else {
                 // Administrador: si no selecciona usuario o selecciona "Sin asignar", asignar a sí mismo
                 if (empty($idUsuarioRequest)) {
-                    $tarea->id_usuario = $usuarioId;
+                    $idUsuarioFinal = $usuarioId;
+                    Log::info('Administrador sin selección, asignándose a sí mismo:', ['id_usuario_final' => $idUsuarioFinal]);
                 } else {
-                    $tarea->id_usuario = $idUsuarioRequest;
+                    $idUsuarioFinal = $idUsuarioRequest;
+                    Log::info('Administrador asignando a usuario específico:', ['id_usuario_final' => $idUsuarioFinal]);
                 }
             }
+
+            // Preparar datos para inserción de la tarea
+            $datosInsert = [
+                'id_tarea' => $nextTareaId,
+                'nom_tarea' => $request->nom_tarea,
+                'id_proyecto' => $request->id_proyecto,
+                'id_usuario' => $idUsuarioFinal,
+                'id_estados' => $nextEstadoId,
+                'fecha_creacion' => now(),
+                'fecha_actualizacion' => now()
+            ];
+            Log::info('Datos a insertar en tareas:', $datosInsert);
+
+            // PASO 1: Crear la tarea PRIMERO (debe existir antes que el estado por la FK)
+            Log::info('Ejecutando INSERT en tabla tareas...');
+            DB::table('tareas')->insert($datosInsert);
+            Log::info('Tarea insertada exitosamente');
             
-            $tarea->save();
+            // PASO 2: Crear el estado DESPUÉS (ahora la FK puede resolverse)
+            Log::info('Insertando estado_tarea...');
+            DB::table('estado_tarea')->insert([
+                'id_estado' => $nextEstadoId,
+                'nom_estat' => 'Pendiente',
+                'id_tarea' => $nextTareaId
+            ]);
+            Log::info('Estado creado exitosamente');
+            
+            // Cargar la tarea recién creada como modelo
+            $tarea = Tareas::find($nextTareaId);
+            Log::info('Tarea cargada como modelo:', ['tarea' => $tarea]);
             
             DB::commit();
+            Log::info('=== TRANSACCIÓN COMPLETADA EXITOSAMENTE ===');
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('=== ERROR AL CREAR TAREA ===');
+            Log::error('Mensaje: ' . $e->getMessage());
+            Log::error('Archivo: ' . $e->getFile());
+            Log::error('Línea: ' . $e->getLine());
+            Log::error('Stack trace:', ['trace' => $e->getTraceAsString()]);
+            
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Error al crear la tarea: ' . $e->getMessage()
+                    'message' => 'Error al crear la tarea: ' . $e->getMessage(),
+                    'error_details' => [
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine()
+                    ]
                 ], 500);
             }
-            return redirect()->back()->with('error', 'Error al crear la tarea');
+            return redirect()->back()->with('error', 'Error al crear la tarea: ' . $e->getMessage());
         }
 
         // Si es una petición AJAX
