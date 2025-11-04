@@ -44,16 +44,42 @@ window.onclick = function(event) {
 }
 
 // Función para editar tarea
-function editarTarea(id, nombre, descripcion, idUsuario) {
+function editarTarea(id, nombre, idUsuario, esAdmin) {
     document.getElementById('tituloModalTarea').textContent = 'Editar Tarea';
     document.getElementById('id_tarea').value = id;
     document.getElementById('nom_tarea').value = nombre;
-    document.getElementById('descripcion_tarea').value = descripcion || '';
     
-    // Solo establecer el usuario si el selector existe (admin)
-    const selectUsuario = document.getElementById('id_usuario');
-    if (selectUsuario) {
-        selectUsuario.value = idUsuario || '';
+    // Si es administrador, mostrar el selector de usuario con el valor actual
+    if (esAdmin) {
+        const selectUsuario = document.getElementById('id_usuario');
+        if (selectUsuario) {
+            selectUsuario.value = idUsuario || '';
+        }
+        
+        // Mostrar el grupo de usuario si está oculto
+        const grupoUsuario = document.getElementById('grupoUsuario');
+        if (grupoUsuario) {
+            grupoUsuario.style.display = 'block';
+        }
+    } else {
+        // Si es participante, mantener el usuario oculto
+        const inputUsuarioHidden = document.getElementById('id_usuario_hidden');
+        if (inputUsuarioHidden) {
+            inputUsuarioHidden.value = idUsuario || '';
+        }
+        
+        // Ocultar el grupo de usuario
+        const grupoUsuario = document.getElementById('grupoUsuario');
+        if (grupoUsuario) {
+            grupoUsuario.style.display = 'none';
+        }
+        
+        // Cambiar el texto de ayuda
+        const helpText = document.getElementById('helpTextUsuario');
+        if (helpText) {
+            helpText.textContent = '✏️ Solo puedes editar el nombre de tu tarea';
+            helpText.style.display = 'block';
+        }
     }
     
     // Cambiar la acción del formulario y método
@@ -70,8 +96,33 @@ function resetFormTarea() {
     document.getElementById('formTarea').reset();
     document.getElementById('id_tarea').value = '';
     
-    // Obtener el ID del proyecto desde el input hidden
-    const idProyecto = document.querySelector('input[name="id_proyecto"]').value;
+    // Restaurar visibilidad del grupo de usuario si es admin
+    const grupoUsuario = document.getElementById('grupoUsuario');
+    if (grupoUsuario) {
+        grupoUsuario.style.display = 'block';
+    }
+    
+    // Restaurar la selección del usuario al usuario actual (el que tiene "selected" en HTML)
+    const selectUsuario = document.getElementById('id_usuario');
+    if (selectUsuario) {
+        // Buscar la opción con el atributo selected por defecto
+        const defaultOption = selectUsuario.querySelector('option[selected]');
+        if (defaultOption) {
+            selectUsuario.value = defaultOption.value;
+        }
+    }
+    
+    // Restaurar texto de ayuda original del administrador
+    const helpTextAdmin = document.querySelector('#grupoUsuario .help-text');
+    if (helpTextAdmin) {
+        helpTextAdmin.textContent = '💡 Por defecto se te asigna a ti, pero puedes cambiarlo';
+    }
+    
+    // Restaurar texto de ayuda para participante
+    const helpText = document.getElementById('helpTextUsuario');
+    if (helpText) {
+        helpText.textContent = '✏️ La tarea se te asignará automáticamente';
+    }
     
     // Restaurar la acción del formulario
     const form = document.getElementById('formTarea');

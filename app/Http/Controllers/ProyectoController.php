@@ -53,10 +53,14 @@ class ProyectoController extends Controller
         // Obtener el siguiente ID disponible para el proyecto
         $nextId = DB::table('proyecto')->max('id_proyecto') + 1;
         
+        // Generar slug a partir del nombre del proyecto
+        $slug = Proyecto::generateSlug($request->input('nombre_del_proyecto'));
+        
         // Crear el proyecto
         $proyecto = new Proyecto();
         $proyecto->id_proyecto = $nextId;
         $proyecto->nom_proyecto = $request->input('nombre_del_proyecto');
+        $proyecto->slug = $slug;
         $proyecto->save();
         
         // Obtener o crear rol por defecto
@@ -97,14 +101,14 @@ class ProyectoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(Proyecto $proyecto)
     {
-        $proyecto = Proyecto::with(['tareas.usuario', 'participar.usuario', 'participar.rol'])
-            ->findOrFail($id);
+        // Cargar relaciones
+        $proyecto->load(['tareas.usuario', 'participar.usuario', 'participar.rol']);
         
         // Verificar si el usuario tiene acceso al proyecto
         $usuarioId = Session::get('usuario_id');
-        $rolUsuario = PermisosHelper::obtenerRolEnProyecto($id, $usuarioId);
+        $rolUsuario = PermisosHelper::obtenerRolEnProyecto($proyecto->id_proyecto, $usuarioId);
         
         if (!$rolUsuario) {
             return redirect()->route('proyectos')->with('error', 'No tienes acceso a este proyecto');
@@ -118,10 +122,10 @@ class ProyectoController extends Controller
         
         // Pasar permisos a la vista
         $permisos = [
-            'puede_crear_tareas' => PermisosHelper::puedeCrearTareas($id, $usuarioId),
-            'puede_gestionar_usuarios' => PermisosHelper::puedeGestionarUsuarios($id, $usuarioId),
-            'es_administrador' => PermisosHelper::esAdministrador($id, $usuarioId),
-            'es_participante' => PermisosHelper::esParticipante($id, $usuarioId),
+            'puede_crear_tareas' => PermisosHelper::puedeCrearTareas($proyecto->id_proyecto, $usuarioId),
+            'puede_gestionar_usuarios' => PermisosHelper::puedeGestionarUsuarios($proyecto->id_proyecto, $usuarioId),
+            'es_administrador' => PermisosHelper::esAdministrador($proyecto->id_proyecto, $usuarioId),
+            'es_participante' => PermisosHelper::esParticipante($proyecto->id_proyecto, $usuarioId),
             'rol_actual' => $rolUsuario
         ];
         
@@ -147,16 +151,10 @@ class ProyectoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Proyecto $proyecto)
     {
-        $proyecto = Proyecto::find($id);
-        
-        if (!$proyecto) {
-            return redirect()->route('proyectos')->with('error', 'Proyecto no encontrado');
-        }
-
         // Verificar que el usuario sea administrador del proyecto
-        if (!PermisosHelper::esAdministrador($id)) {
+        if (!PermisosHelper::esAdministrador($proyecto->id_proyecto)) {
             return redirect()->route('proyectos')->with('error', 'Solo el administrador puede eliminar el proyecto');
         }
 

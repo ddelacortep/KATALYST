@@ -23,19 +23,19 @@ class Tareas extends Model
         'id_estados'
     ];
 
-    public function estadotarea(): BelongsTo
+    public function estadoTarea(): BelongsTo
     {
-        return $this->belongsTo(EstadoTarea::class, 'id_estado');
+        return $this->belongsTo(EstadoTarea::class, 'id_estados', 'id_estado');
     }
     
     public function usuario(): belongsTo
     {
-        return $this->belongsTo(Usuario::class, 'id_usuario');
+        return $this->belongsTo(Usuario::class, 'id_usuario', 'id_usuario');
     }
 
     public function proyecto(): belongsTo
     {
-        return $this->belongsTo(Proyecto::class, 'id_proyecto');
+        return $this->belongsTo(Proyecto::class, 'id_proyecto', 'id_proyecto');
     }
 }
 
