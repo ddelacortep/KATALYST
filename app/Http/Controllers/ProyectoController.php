@@ -78,8 +78,8 @@ class ProyectoController extends Controller
         if (!empty($usuarioInput) && $usuarioInput != $usuarioAutenticadoId) {
             // Buscar el usuario colaborador
             $usuario = Usuario::where('id_usuario', $usuarioInput)
-                             ->orWhere('nom_usuario', $usuarioInput)
-                             ->first();
+                            ->orWhere('nom_usuario', $usuarioInput)
+                            ->first();
             
             // Si existe el usuario, agregarlo como colaborador
             if ($usuario) {
@@ -119,11 +119,9 @@ class ProyectoController extends Controller
         // Pasar permisos a la vista
         $permisos = [
             'puede_crear_tareas' => PermisosHelper::puedeCrearTareas($id, $usuarioId),
-            'puede_eliminar_tareas' => PermisosHelper::puedeEliminarTarea($id, $usuarioId),
             'puede_gestionar_usuarios' => PermisosHelper::puedeGestionarUsuarios($id, $usuarioId),
             'es_administrador' => PermisosHelper::esAdministrador($id, $usuarioId),
-            'es_editor' => PermisosHelper::esEditor($id, $usuarioId),
-            'es_visualizador' => PermisosHelper::esVisualizador($id, $usuarioId),
+            'es_participante' => PermisosHelper::esParticipante($id, $usuarioId),
             'rol_actual' => $rolUsuario
         ];
         

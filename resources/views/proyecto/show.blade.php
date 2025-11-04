@@ -45,13 +45,9 @@
                 @endif
             </div>
 
-            @if($permisos['es_visualizador'])
+            @if($permisos['es_participante'])
                 <div class="alert alert-info">
-                    <strong>👁️ Modo Visualizador:</strong> Solo puedes ver las tareas. No puedes crear ni editar.
-                </div>
-            @elseif($permisos['es_editor'])
-                <div class="alert alert-info">
-                    <strong>✏️ Modo Editor:</strong> Puedes crear tareas y editarlas. Solo el administrador puede eliminarlas.
+                    <strong>� Modo Participante:</strong> Puedes crear tareas asignadas a ti y editar/eliminar solo tus propias tareas.
                 </div>
             @endif
 
@@ -67,7 +63,8 @@
                             </span>
                             <div class="tarea-actions">
                                 @php
-                                    $puedeEditar = $permisos['es_administrador'] || ($permisos['es_editor'] && $tarea->id_usuario == session('usuario_id'));
+                                    $puedeEditar = $permisos['es_administrador'] || ($permisos['es_participante'] && $tarea->id_usuario == session('usuario_id'));
+                                    $puedeEliminar = $permisos['es_administrador'] || ($permisos['es_participante'] && $tarea->id_usuario == session('usuario_id'));
                                 @endphp
                                 
                                 @if($puedeEditar)
@@ -76,7 +73,7 @@
                                     </button>
                                 @endif
                                 
-                                @if($permisos['puede_eliminar_tareas'])
+                                @if($puedeEliminar)
                                     <form action="{{ route('tareas.destroy', $tarea->id_tarea) }}" method="POST" style="display: inline;" onsubmit="return confirm('¿Estás seguro de eliminar esta tarea?')">
                                         @csrf
                                         @method('DELETE')
@@ -153,26 +150,25 @@
         <!-- Contenido de Roles -->
         <div id="roles" class="tab-content">
             <div class="section-header">
-                <h2>Gestión de Roles</h2>
-                <button class="btn-primary" onclick="toggleModal('modalRol')">+ Crear Rol</button>
+                <h2>Roles del Sistema</h2>
+                <p class="help-text">Los roles son predefinidos y no se pueden modificar</p>
             </div>
 
             <div class="roles-list">
                 @forelse($roles as $rol)
                     <div class="rol-card">
-                        <h3>{{ $rol->nom_rols }}</h3>
-                        <p>ID: {{ $rol->id_rols }}</p>
-                        <div class="rol-actions">
-                            <button class="btn-icon" onclick="editarRol({{ $rol->id_rols }}, '{{ $rol->nom_rols }}')" title="Editar">✏️</button>
-                            <form action="{{ route('roles.destroy', $rol->id_rols) }}" method="POST" style="display: inline;" onsubmit="return confirm('¿Estás seguro de eliminar este rol?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn-icon btn-danger" title="Eliminar">🗑️</button>
-                            </form>
+                        <div class="rol-header">
+                            <h3>{{ $rol->nom_rols }}</h3>
+                            @if($rol->id_rols == 1)
+                                <span class="badge badge-admin">👑 Sistema</span>
+                            @else
+                                <span class="badge badge-participant">👥 Predeterminado</span>
+                            @endif
                         </div>
+                        <p class="rol-descripcion">{{ $rol->descripcion }}</p>
                     </div>
                 @empty
-                    <p class="empty-message">No hay roles creados.</p>
+                    <p class="empty-message">No hay roles en el sistema.</p>
                 @endforelse
             </div>
         </div>
@@ -256,29 +252,6 @@
                 <div class="form-actions">
                     <button type="button" class="btn-secondary" onclick="toggleModal('modalUsuario')">Cancelar</button>
                     <button type="submit" class="btn-primary">Agregar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal Crear/Editar Rol -->
-    <div id="modalRol" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="toggleModal('modalRol')">&times;</span>
-            <h2 id="tituloModalRol">Crear Rol</h2>
-            <form id="formRol" action="{{ route('roles.store') }}" method="POST">
-                @csrf
-                <input type="hidden" name="_method" id="methodRol" value="POST">
-                <input type="hidden" name="id_rol" id="id_rol" value="">
-                
-                <div class="form-group">
-                    <label for="nom_rols">Nombre del Rol *</label>
-                    <input type="text" id="nom_rols" name="nom_rols" required>
-                </div>
-
-                <div class="form-actions">
-                    <button type="button" class="btn-secondary" onclick="toggleModal('modalRol')">Cancelar</button>
-                    <button type="submit" class="btn-primary">Guardar</button>
                 </div>
             </form>
         </div>

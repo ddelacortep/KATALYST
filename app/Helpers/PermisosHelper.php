@@ -11,8 +11,7 @@ class PermisosHelper
      * IDs de roles predefinidos
      */
     const ROL_ADMINISTRADOR = 1;
-    const ROL_EDITOR = 2;
-    const ROL_VISUALIZADOR = 3;
+    const ROL_PARTICIPANTE = 2;
 
     /**
      * Obtener el rol del usuario en un proyecto
@@ -42,37 +41,28 @@ class PermisosHelper
     }
 
     /**
-     * Verificar si el usuario es editor del proyecto
+     * Verificar si el usuario es participante del proyecto
      */
-    public static function esEditor($idProyecto, $idUsuario = null)
+    public static function esParticipante($idProyecto, $idUsuario = null)
     {
         $rol = self::obtenerRolEnProyecto($idProyecto, $idUsuario);
-        return $rol === self::ROL_EDITOR;
-    }
-
-    /**
-     * Verificar si el usuario es visualizador del proyecto
-     */
-    public static function esVisualizador($idProyecto, $idUsuario = null)
-    {
-        $rol = self::obtenerRolEnProyecto($idProyecto, $idUsuario);
-        return $rol === self::ROL_VISUALIZADOR;
+        return $rol === self::ROL_PARTICIPANTE;
     }
 
     /**
      * Verificar si el usuario puede crear tareas
-     * Administrador y Editor pueden crear
+     * Tanto Administrador como Participante pueden crear tareas
      */
     public static function puedeCrearTareas($idProyecto, $idUsuario = null)
     {
         $rol = self::obtenerRolEnProyecto($idProyecto, $idUsuario);
-        return in_array($rol, [self::ROL_ADMINISTRADOR, self::ROL_EDITOR]);
+        return in_array($rol, [self::ROL_ADMINISTRADOR, self::ROL_PARTICIPANTE]);
     }
 
     /**
      * Verificar si el usuario puede editar una tarea
      * Administrador puede editar todas
-     * Editor puede editar solo las suyas
+     * Participante puede editar solo las suyas
      */
     public static function puedeEditarTarea($tarea, $idUsuario = null)
     {
@@ -84,7 +74,7 @@ class PermisosHelper
             return true;
         }
 
-        if ($rol === self::ROL_EDITOR && $tarea->id_usuario == $idUsuario) {
+        if ($rol === self::ROL_PARTICIPANTE && $tarea->id_usuario == $idUsuario) {
             return true;
         }
 
@@ -93,11 +83,24 @@ class PermisosHelper
 
     /**
      * Verificar si el usuario puede eliminar una tarea
-     * Solo el administrador puede eliminar
+     * Administrador puede eliminar todas las tareas
+     * Participante puede eliminar solo las suyas
      */
-    public static function puedeEliminarTarea($idProyecto, $idUsuario = null)
+    public static function puedeEliminarTarea($tarea, $idUsuario = null)
     {
-        return self::esAdministrador($idProyecto, $idUsuario);
+        $idUsuario = $idUsuario ?? Session::get('usuario_id');
+        $idProyecto = $tarea->id_proyecto;
+        $rol = self::obtenerRolEnProyecto($idProyecto, $idUsuario);
+
+        if ($rol === self::ROL_ADMINISTRADOR) {
+            return true;
+        }
+
+        if ($rol === self::ROL_PARTICIPANTE && $tarea->id_usuario == $idUsuario) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -116,8 +119,7 @@ class PermisosHelper
     {
         $nombres = [
             self::ROL_ADMINISTRADOR => 'Administrador',
-            self::ROL_EDITOR => 'Editor',
-            self::ROL_VISUALIZADOR => 'Visualizador'
+            self::ROL_PARTICIPANTE => 'Participante'
         ];
 
         return $nombres[$idRol] ?? 'Desconocido';
@@ -129,9 +131,8 @@ class PermisosHelper
     public static function obtenerDescripcionRol($idRol)
     {
         $descripciones = [
-            self::ROL_ADMINISTRADOR => 'Puede crear, editar y eliminar tareas. Gestiona usuarios del proyecto.',
-            self::ROL_EDITOR => 'Puede crear tareas y editarlas (solo las propias).',
-            self::ROL_VISUALIZADOR => 'Solo puede ver el proyecto y sus tareas.'
+            self::ROL_ADMINISTRADOR => 'Creador del proyecto. Puede crear y asignar tareas a cualquier usuario, y eliminar cualquier tarea.',
+            self::ROL_PARTICIPANTE => 'Puede ver todas las tareas y crear tareas asignadas a sí mismo. Solo puede eliminar sus propias tareas.'
         ];
 
         return $descripciones[$idRol] ?? '';

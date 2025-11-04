@@ -192,12 +192,11 @@ GO
 PRINT 'Insertando roles predefinidos...';
 
 INSERT INTO Roles (id_rols, nom_rols, descripcion) VALUES
-(1, 'Administrador', 'Control total del proyecto: crear, editar, eliminar tareas y gestionar usuarios'),
-(2, 'Editor', 'Puede crear tareas pero solo asignárselas a sí mismo'),
-(3, 'Visualizador', 'Solo puede ver las tareas del proyecto, sin permisos de edición');
+(1, 'Administrador', 'Creador del proyecto. Puede crear y asignar tareas a cualquier usuario, y eliminar cualquier tarea.'),
+(2, 'Participante', 'Puede ver todas las tareas y crear tareas asignadas a sí mismo. Solo puede eliminar sus propias tareas.');
 GO
 
-PRINT 'Roles insertados: Administrador, Editor, Visualizador';
+PRINT 'Roles insertados: Administrador, Participante';
 GO
 
 -- ============================================================================

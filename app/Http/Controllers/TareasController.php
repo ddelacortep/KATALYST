@@ -79,12 +79,12 @@ class TareasController extends Controller
             // Determinar quién será asignado a la tarea
             $idUsuarioFinal = null;
             
-            // Si es editor, solo puede asignarse tareas a sí mismo
-            if (PermisosHelper::esEditor($request->id_proyecto, $usuarioId)) {
+            // Si es participante, solo puede asignarse tareas a sí mismo
+            if (PermisosHelper::esParticipante($request->id_proyecto, $usuarioId)) {
                 $idUsuarioFinal = $usuarioId;
-                Log::info('Editor asignándose a sí mismo:', ['id_usuario_final' => $idUsuarioFinal]);
+                Log::info('Participante asignándose a sí mismo:', ['id_usuario_final' => $idUsuarioFinal]);
             } else {
-                // Administrador: si no selecciona usuario o selecciona "Sin asignar", asignar a sí mismo
+                // Administrador: puede asignar a cualquier usuario del proyecto
                 if (empty($idUsuarioRequest)) {
                     $idUsuarioFinal = $usuarioId;
                     Log::info('Administrador sin selección, asignándose a sí mismo:', ['id_usuario_final' => $idUsuarioFinal]);
@@ -250,14 +250,14 @@ class TareasController extends Controller
         }
 
         // Verificar permisos para eliminar
-        if (!PermisosHelper::puedeEliminarTarea($tarea->id_proyecto)) {
+        if (!PermisosHelper::puedeEliminarTarea($tarea)) {
             if (request()->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Solo el administrador puede eliminar tareas'
+                    'message' => 'No tienes permisos para eliminar esta tarea'
                 ], 403);
             }
-            return redirect()->back()->with('error', 'Solo el administrador puede eliminar tareas');
+            return redirect()->back()->with('error', 'No tienes permisos para eliminar esta tarea');
         }
 
         // Eliminar tarea y su estado asociado en una transacción
