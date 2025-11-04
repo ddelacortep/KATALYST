@@ -51,41 +51,109 @@
                 </div>
             @endif
 
-            <div class="tareas-list">
-                @forelse($proyecto->tareas as $tarea)
-                    <div class="tarea-card">
-                        <div class="tarea-header">
-                            <h3>{{ $tarea->nom_tarea }}</h3>
-                        </div>
-                        <div class="tarea-footer">
-                            <span class="tarea-usuario">
-                                👤 {{ $tarea->usuario->nom_usuario ?? 'Sin asignar' }}
-                            </span>
-                            <div class="tarea-actions">
+            <div class="tareas-table-container">
+                @if($proyecto->tareas->count() > 0)
+                    <table class="tareas-table">
+                        <thead>
+                            <tr>
+                                <th class="col-numero">#</th>
+                                <th class="col-tarea">Tarea</th>
+                                <th class="col-asignado">Asignado a</th>
+                                <th class="col-estado">Estado</th>
+                                <th class="col-fecha">Fecha Creación</th>
+                                @if($permisos['es_administrador'])
+                                    <th class="col-permisos">Permisos</th>
+                                @endif
+                                <th class="col-acciones">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($proyecto->tareas as $index => $tarea)
                                 @php
                                     $puedeEditar = $permisos['es_administrador'] || ($permisos['es_participante'] && $tarea->id_usuario == session('usuario_id'));
                                     $puedeEliminar = $permisos['es_administrador'] || ($permisos['es_participante'] && $tarea->id_usuario == session('usuario_id'));
+                                    $esMiTarea = $tarea->id_usuario == session('usuario_id');
                                 @endphp
-                                
-                                @if($puedeEditar)
-                                    <button class="btn-icon" onclick="editarTarea({{ $tarea->id_tarea }}, '{{ addslashes($tarea->nom_tarea) }}', {{ $tarea->id_usuario ?? 'null' }})" title="Editar">
-                                        ✏️
-                                    </button>
-                                @endif
-                                
-                                @if($puedeEliminar)
-                                    <form action="{{ route('tareas.destroy', $tarea->id_tarea) }}" method="POST" style="display: inline;" onsubmit="return confirm('¿Estás seguro de eliminar esta tarea?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn-icon btn-danger" title="Eliminar">🗑️</button>
-                                    </form>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                @empty
+                                <tr class="{{ $esMiTarea ? 'mi-tarea' : '' }}">
+                                    <td class="col-numero">{{ $index + 1 }}</td>
+                                    <td class="col-tarea">
+                                        <span class="tarea-nombre">{{ $tarea->nom_tarea }}</span>
+                                    </td>
+                                    <td class="col-asignado">
+                                        <div class="usuario-cell">
+                                            <span class="usuario-icon">👤</span>
+                                            <span>{{ $tarea->usuario->nom_usuario ?? 'Sin asignar' }}</span>
+                                            @if($esMiTarea)
+                                                <span class="badge-mini badge-owner">Tú</span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td class="col-estado">
+                                        @php
+                                            $estadoActual = $tarea->estadoTarea->nom_estat ?? 'Pendiente';
+                                            $claseBadge = match($estadoActual) {
+                                                'En Progreso' => 'badge-en-progreso',
+                                                'Completada' => 'badge-completada',
+                                                default => 'badge-pendiente'
+                                            };
+                                        @endphp
+                                        
+                                        @if($puedeEditar)
+                                            <form action="{{ route('estado.update', $tarea->id_tarea) }}" method="POST" class="form-estado">
+                                                @csrf
+                                                @method('PUT')
+                                                <select name="nom_estat" class="select-estado {{ $claseBadge }}" onchange="this.form.submit()">
+                                                    <option value="Pendiente" {{ $estadoActual == 'Pendiente' ? 'selected' : '' }}>
+                                                        🔴 Pendiente
+                                                    </option>
+                                                    <option value="En Progreso" {{ $estadoActual == 'En Progreso' ? 'selected' : '' }}>
+                                                        🔵 En Progreso
+                                                    </option>
+                                                    <option value="Completada" {{ $estadoActual == 'Completada' ? 'selected' : '' }}>
+                                                        ✅ Completada
+                                                    </option>
+                                                </select>
+                                            </form>
+                                        @else
+                                            <span class="badge-estado {{ $claseBadge }}">
+                                                {{ $estadoActual }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="col-fecha">
+                                        {{ $tarea->fecha_creacion ? \Carbon\Carbon::parse($tarea->fecha_creacion)->format('d/m/Y') : '-' }}
+                                    </td>
+                                    @if($permisos['es_administrador'])
+                                        <td class="col-permisos">
+                                            <span class="badge badge-admin-mini">👑 Admin</span>
+                                        </td>
+                                    @endif
+                                    <td class="col-acciones">
+                                        <div class="acciones-group">
+                                            @if($puedeEditar)
+                                                <button class="btn-tabla btn-editar" 
+                                                    onclick="editarTarea({{ $tarea->id_tarea }}, '{{ addslashes($tarea->nom_tarea) }}', {{ $tarea->id_usuario ?? 'null' }}, {{ $permisos['es_administrador'] ? 'true' : 'false' }})" 
+                                                    title="Editar">
+                                                    ✏️
+                                                </button>
+                                            @endif
+                                            
+                                            @if($puedeEliminar)
+                                                <form action="{{ route('tareas.destroy', $tarea->id_tarea) }}" method="POST" style="display: inline;" onsubmit="return confirm('¿Estás seguro de eliminar esta tarea?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn-tabla btn-eliminar" title="Eliminar">🗑️</button>
+                                                </form>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
                     <p class="empty-message">No hay tareas en este proyecto. @if($permisos['puede_crear_tareas'])¡Crea la primera!@endif</p>
-                @endforelse
+                @endif
             </div>
         </div>
 
@@ -191,20 +259,24 @@
                 </div>
 
                 @if($permisos['es_administrador'])
-                    <div class="form-group">
+                    <div class="form-group" id="grupoUsuario">
                         <label for="id_usuario">Asignar a</label>
                         <select id="id_usuario" name="id_usuario">
-                            <option value="">Sin asignar</option>
                             @foreach($proyecto->participar as $participacion)
-                                <option value="{{ $participacion->usuario->id_usuario }}">
+                                <option value="{{ $participacion->usuario->id_usuario }}" 
+                                    {{ $participacion->usuario->id_usuario == session('usuario_id') ? 'selected' : '' }}>
                                     {{ $participacion->usuario->nom_usuario }}
+                                    @if($participacion->usuario->id_usuario == session('usuario_id'))
+                                        (Tú)
+                                    @endif
                                 </option>
                             @endforeach
                         </select>
+                        <p class="help-text">💡 Por defecto se te asigna a ti, pero puedes cambiarlo</p>
                     </div>
                 @else
-                    <input type="hidden" name="id_usuario" value="{{ session('usuario_id') }}">
-                    <p class="help-text">✏️ La tarea se te asignará automáticamente</p>
+                    <input type="hidden" name="id_usuario" id="id_usuario_hidden" value="{{ session('usuario_id') }}">
+                    <p class="help-text" id="helpTextUsuario">✏️ La tarea se te asignará automáticamente</p>
                 @endif
 
                 <div class="form-actions">
