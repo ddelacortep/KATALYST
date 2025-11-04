@@ -27,8 +27,6 @@ function toggleModal(modalId) {
         // Resetear formulario si se cierra
         if (modalId === 'modalTarea') {
             resetFormTarea();
-        } else if (modalId === 'modalRol') {
-            resetFormRol();
         }
     } else {
         modal.style.display = 'block';
@@ -79,32 +77,6 @@ function resetFormTarea() {
     const form = document.getElementById('formTarea');
     form.action = '/tareas';
     document.getElementById('methodTarea').value = 'POST';
-}
-
-// Función para editar rol
-function editarRol(id, nombre) {
-    document.getElementById('tituloModalRol').textContent = 'Editar Rol';
-    document.getElementById('id_rol').value = id;
-    document.getElementById('nom_rols').value = nombre;
-    
-    // Cambiar la acción del formulario y método
-    const form = document.getElementById('formRol');
-    form.action = `/roles/${id}`;
-    document.getElementById('methodRol').value = 'PUT';
-    
-    toggleModal('modalRol');
-}
-
-// Función para resetear formulario de rol
-function resetFormRol() {
-    document.getElementById('tituloModalRol').textContent = 'Crear Rol';
-    document.getElementById('formRol').reset();
-    document.getElementById('id_rol').value = '';
-    
-    // Restaurar la acción del formulario
-    const form = document.getElementById('formRol');
-    form.action = '/roles';
-    document.getElementById('methodRol').value = 'POST';
 }
 
 // Auto-ocultar alertas después de 5 segundos
