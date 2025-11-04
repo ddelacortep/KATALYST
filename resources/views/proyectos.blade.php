@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Proyectos</title>
-    <link rel="stylesheet" href="{{ asset('css/proyectos.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/proyectos/index.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
 
@@ -42,11 +42,11 @@
         <div class="content">
             <div class="sidebar">
                 <div class="sidebar-content">
-                    <a href="{{ route('roles.index') }}" class="sidebar-link">
-                        <div class="sidebar-item sidebar-item-roles">
-                            <span>⚙️ Gestionar Roles</span>
+                    <button id="btnFavoritos" class="sidebar-link" onclick="toggleFavoritos()">
+                        <div class="sidebar-item sidebar-item-favoritos">
+                            <span>⭐ Favoritos</span>
                         </div>
-                    </a>
+                    </button>
                 </div>
                 <a href="{{ route('create') }}">
                     <button class="btn-crear">Crear</button>
@@ -57,7 +57,13 @@
                 <div class="project-grid" id="projectGrid">
                     @if(isset($proyectos))
                         @foreach($proyectos as $proyecto)
-                            <div class="project-card">
+                            <div class="project-card" data-proyecto-id="{{ $proyecto->id_proyecto }}">
+                                <button class="btn-favorito" onclick="toggleFavorito({{ $proyecto->id_proyecto }})" title="Agregar a favoritos">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="star-icon">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                        <path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z" />
+                                    </svg>
+                                </button>
                                 <a href="{{ route('proyectos.show', $proyecto->id_proyecto) }}" class="project-link">
                                     <div class="project-card-content">
                                         <h3 class="project-title">{{ $proyecto->nom_proyecto }}</h3>
@@ -99,6 +105,8 @@
             alert('{{ session('error') }}');
         </script>
     @endif
+
+    <script src="{{ asset('js/proyectos/index.js') }}"></script>
 </body>
 
 </html>

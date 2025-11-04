@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Gestión de Roles - KATALYST</title>
-    <link rel="stylesheet" href="{{ asset('css/roles.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/roles/roles.css') }}">
 </head>
 <body>
     <div class="container">
@@ -75,6 +75,6 @@
         </div>
     </div>
 
-    <script src="{{ asset('js/roles.js') }}"></script>
+    <script src="{{ asset('js/roles/roles.js') }}"></script>
 </body>
 </html>

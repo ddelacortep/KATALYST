@@ -39,8 +39,7 @@ Route::put('/tareas/{id}', [TareasController::class, 'update'])->name('tareas.up
 Route::delete('/tareas/{id}', [TareasController::class, 'destroy'])->name('tareas.destroy');
 Route::get('/tareas/{id}', [TareasController::class, 'show'])->name('tareas.show');
 
-// Rutas para roles
-Route::get('/roles', [RolsController::class, 'index'])->name('roles.index');
+// Rutas para roles (solo accesibles desde dentro de un proyecto)
 Route::post('/roles', [RolsController::class, 'store'])->name('roles.store');
 Route::put('/roles/{id}', [RolsController::class, 'update'])->name('roles.update');
 Route::delete('/roles/{id}', [RolsController::class, 'destroy'])->name('roles.destroy');
