@@ -2,13 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProyectoController;
-<<<<<<< HEAD
-use App\Http\Controllers\RegisterController;
-=======
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TareasController;
 use App\Http\Controllers\RolsController;
->>>>>>> main
 
 Route::get('/', function () {
     return view('index');
@@ -29,11 +25,6 @@ Route::get('/create', function () {
 Route::post('/proyectos/store', [ProyectoController::class, 'store'])->name('proyectos.store');
 Route::delete('/proyectos/{id}', [ProyectoController::class, 'destroy'])->name('proyectos.destroy');
 
-<<<<<<< HEAD
-Route::post('/proyectos/store', [ProyectoController::class, 'store'])->name('proyectos.store');
-
-Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-=======
 // Ruta para ver un proyecto específico
 Route::get('/proyectos/{id}', [ProyectoController::class, 'show'])->name('proyectos.show');
 
@@ -52,4 +43,4 @@ Route::get('/tareas/{id}', [TareasController::class, 'show'])->name('tareas.show
 Route::post('/roles', [RolsController::class, 'store'])->name('roles.store');
 Route::put('/roles/{id}', [RolsController::class, 'update'])->name('roles.update');
 Route::delete('/roles/{id}', [RolsController::class, 'destroy'])->name('roles.destroy');
->>>>>>> main
+
