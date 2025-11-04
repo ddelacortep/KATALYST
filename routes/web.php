@@ -5,6 +5,7 @@ use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TareasController;
 use App\Http\Controllers\RolsController;
+use App\Http\Controllers\ParticipacionController;
 
 Route::get('/', function () {
     return view('index');
@@ -28,10 +29,10 @@ Route::delete('/proyectos/{id}', [ProyectoController::class, 'destroy'])->name('
 // Ruta para ver un proyecto específico
 Route::get('/proyectos/{id}', [ProyectoController::class, 'show'])->name('proyectos.show');
 
-// Rutas para gestionar usuarios en proyectos
-Route::post('/proyectos/{id}/usuarios', [ProyectoController::class, 'agregarUsuario'])->name('proyectos.usuarios.agregar');
-Route::delete('/proyectos/{proyectoId}/usuarios/{usuarioId}', [ProyectoController::class, 'eliminarUsuario'])->name('proyectos.usuarios.eliminar');
-Route::put('/proyectos/{proyectoId}/usuarios/{usuarioId}/rol', [ProyectoController::class, 'actualizarRolUsuario'])->name('proyectos.usuarios.actualizarRol');
+// Rutas para gestionar participación de usuarios en proyectos
+Route::post('/proyectos/{proyectoId}/participacion', [ParticipacionController::class, 'store'])->name('participacion.store');
+Route::delete('/proyectos/{proyectoId}/participacion/{usuarioId}', [ParticipacionController::class, 'destroy'])->name('participacion.destroy');
+Route::put('/proyectos/{proyectoId}/participacion/{usuarioId}/rol', [ParticipacionController::class, 'updateRol'])->name('participacion.updateRol');
 
 // Rutas para tareas
 Route::post('/tareas', [TareasController::class, 'store'])->name('tareas.store');

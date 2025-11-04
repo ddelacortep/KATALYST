@@ -113,7 +113,7 @@
                         </div>
                         <div class="usuario-rol">
                             @if($permisos['puede_gestionar_usuarios'] && $participacion->id_rols != 1)
-                                <form action="{{ route('proyectos.usuarios.actualizarRol', [$proyecto->id_proyecto, $participacion->id_usuario]) }}" method="POST" class="form-inline">
+                                <form action="{{ route('participacion.updateRol', [$proyecto->id_proyecto, $participacion->id_usuario]) }}" method="POST" class="form-inline">
                                     @csrf
                                     @method('PUT')
                                     <select name="id_rol" class="select-rol" onchange="this.form.submit()">
@@ -133,7 +133,7 @@
                         </div>
                         <div class="usuario-actions">
                             @if($permisos['puede_gestionar_usuarios'] && $participacion->id_rols != 1)
-                                <form action="{{ route('proyectos.usuarios.eliminar', [$proyecto->id_proyecto, $participacion->id_usuario]) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este usuario del proyecto?')">
+                                <form action="{{ route('participacion.destroy', [$proyecto->id_proyecto, $participacion->id_usuario]) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este usuario del proyecto?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn-icon btn-danger" title="Eliminar">🗑️</button>
@@ -220,7 +220,7 @@
         <div class="modal-content">
             <span class="close" onclick="toggleModal('modalUsuario')">&times;</span>
             <h2>Agregar Usuario al Proyecto</h2>
-            <form action="{{ route('proyectos.usuarios.agregar', $proyecto->id_proyecto) }}" method="POST">
+            <form action="{{ route('participacion.store', $proyecto->id_proyecto) }}" method="POST">
                 @csrf
                 
                 <div class="form-group">
