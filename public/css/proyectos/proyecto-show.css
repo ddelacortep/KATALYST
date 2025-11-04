@@ -350,7 +350,6 @@ h1 {
     background: #f8f9fa;
     padding: 20px;
     border-radius: 10px;
-    text-align: center;
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
@@ -359,14 +358,45 @@ h1 {
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 }
 
-.rol-card h3 {
-    color: #333;
-    margin-bottom: 10px;
+.rol-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
 }
 
-.rol-card p {
+.rol-card h3 {
+    color: #333;
+    margin: 0;
+}
+
+.rol-descripcion {
     color: #666;
-    margin-bottom: 15px;
+    line-height: 1.6;
+    text-align: left;
+}
+
+.badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.badge-admin {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.badge-participant {
+    background: #67B0AD;
+    color: white;
+}
+
+.help-text {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0;
 }
 
 .rol-actions {
