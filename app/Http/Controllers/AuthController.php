@@ -5,90 +5,79 @@ namespace App\Http\Controllers;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use App\Models\Participar;
 
 class AuthController extends Controller
 {
-    /**
-     * Mostrar el formulario de registro
-     */
     public function showRegisterForm()
     {
         return view('register');
     }
 
-    /**
-     * Procesar el registro
-     */
     public function register(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'username' => 'required|string|max:255|unique:usuario,nom_usuario',
             'email' => 'required|email|max:255|unique:usuario,email',
             'password' => 'required|string|min:6|confirmed',
         ]);
 
         $usuario = Usuario::create([
-            'id_usuario' => DB::table('usuario')->max('id_usuario') + 1,
-            'nom_usuario' => $request->username,
-            'email' => $request->email,
-            'password' => $request->password,
+            'id_usuario' => Usuario::max('id_usuario') + 1,
+            'nom_usuario' => $validated['username'],
+            'email' => $validated['email'],
+            'password' => $validated['password'],
         ]);
 
         Auth::login($usuario);
         
-        // Inicializar cache de proyectos vacío
-        session(['user_projects' => []]);
+        session([
+            'user_id' => $usuario->id_usuario,
+            'user_name' => $usuario->nom_usuario,
+            'user_email' => $usuario->email,
+            'user_projects' => [],
+            'accessible_projects' => []
+        ]);
 
         return redirect()->route('proyectos')->with('success', '¡Registro exitoso! Bienvenido.');
     }
 
-    /**
-     * Mostrar el formulario de login
-     */
     public function showLoginForm()
     {
         return view('login');
     }
 
-    /**
-     * Procesar el login
-     */
     public function login(Request $request)
     {
-        $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string',
-        ]);
-
         $usuario = Usuario::where('nom_usuario', $request->username)
-                        ->orWhere('email', $request->username)
-                        ->first();
+            ->orWhere('email', $request->username)
+            ->where('password', $request->password)
+            ->first(['id_usuario', 'nom_usuario', 'email']);
 
-        if (!$usuario || $usuario->password !== $request->password) {
-            return back()->withErrors(['username' => 'Credenciales incorrectas.'])
-                        ->withInput($request->only('username'));
+        if (!$usuario) {
+            return back()->withErrors(['username' => 'Credenciales incorrectas.'])->withInput($request->only('username'));
         }
 
         Auth::login($usuario);
         
-        // Cargar proyectos del usuario en sesión
-        $proyectos = Participar::where('id_usuario', $usuario->id_usuario)
+        $proyectosUsuario = $usuario->proyectos()
             ->pluck('id_rols', 'id_proyecto')
             ->toArray();
         
-        session(['user_projects' => $proyectos]);
+        session([
+            'user_id' => $usuario->id_usuario,
+            'user_name' => $usuario->nom_usuario,
+            'user_email' => $usuario->email,
+            'user_projects' => $proyectosUsuario,
+            'accessible_projects' => array_keys($proyectosUsuario)
+        ]);
 
-        return redirect()->route('proyectos')->with('success', '¡Bienvenido de nuevo, ' . $usuario->nom_usuario . '!');
+        return redirect()->route('proyectos')->with('success', "¡Bienvenido de nuevo, {$usuario->nom_usuario}!");
     }
 
-    /**
-     * Cerrar sesión
-     */
     public function logout()
     {
         Auth::logout();
-        return redirect()->route('index')->with('success', 'Sesión cerrada correctamente.');
+        session()->flush();
+        return redirect()->route('index')->with('success', 'Sesión cerrada');
     }
 }
