@@ -63,4 +63,32 @@ class Usuario extends Authenticatable
             'id_proyecto'
         )->withPivot('id_rols');
     }
+
+    /**
+     * Verificar si el usuario tiene proyectos asignados
+     */
+    public function tieneProyectos(): bool
+    {
+        return $this->proyectos()->exists();
+    }
+
+    /**
+     * Obtener información básica del usuario
+     */
+    public function informacionBasica(): array
+    {
+        return [
+            'id_usuario' => $this->id_usuario,
+            'nom_usuario' => $this->nom_usuario,
+            'email' => $this->email
+        ];
+    }
+
+    /**
+     * Scope para obtener solo información básica
+     */
+    public function scopeInformacionBasica($query)
+    {
+        return $query->select('id_usuario', 'nom_usuario', 'email');
+    }
 }
