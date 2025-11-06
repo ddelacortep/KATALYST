@@ -3,32 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\Models\Participar;
-use App\Helpers\PermisosHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ParticipacionController extends Controller
 {
+    // Constante local para simplificar referencias a rol administrador
+    private const ROL_ADMINISTRADOR = 1;
     /**
      * Agregar un usuario a un proyecto
      */
     public function store(Request $request, $proyectoId)
     {
-        if (!PermisosHelper::puedeGestionarUsuarios($proyectoId)) {
-            return redirect()->back()->with('error', 'Sin permisos');
-        }
+        $this->ensureAdmin($proyectoId);
 
-        $request->validate([
+        $data = $request->validate([
             'id_usuario' => 'required|exists:usuario,id_usuario',
             'id_rol' => 'required|exists:roles,id_rols',
         ]);
 
-        Participar::firstOrCreate(
-            ['id_usuario' => $request->id_usuario, 'id_proyecto' => $proyectoId],
-            ['id_rols' => $request->id_rol]
+        $participacion = Participar::firstOrCreate(
+            ['id_usuario' => $data['id_usuario'], 'id_proyecto' => $proyectoId],
+            ['id_rols' => $data['id_rol']]
         );
 
-        return redirect()->back()->with('success', 'Usuario agregado al proyecto');
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario agregado al proyecto',
+            'data' => $participacion,
+        ], 201);
     }
 
     /**
@@ -36,16 +39,17 @@ class ParticipacionController extends Controller
      */
     public function destroy($proyectoId, $usuarioId)
     {
-        if (!PermisosHelper::puedeGestionarUsuarios($proyectoId)) {
-            return redirect()->back()->with('error', 'Sin permisos');
-        }
+        $this->ensureAdmin($proyectoId);
 
-        Participar::where('id_proyecto', $proyectoId)
+        $deleted = Participar::where('id_proyecto', $proyectoId)
             ->where('id_usuario', $usuarioId)
-            ->where('id_rols', '!=', PermisosHelper::ROL_ADMINISTRADOR)
+            ->where('id_rols', '!=', self::ROL_ADMINISTRADOR)
             ->delete();
 
-        return redirect()->back()->with('success', 'Usuario eliminado del proyecto');
+        return response()->json([
+            'success' => (bool) $deleted,
+            'message' => $deleted ? 'Usuario eliminado del proyecto' : 'No se eliminó ninguna participación',
+        ]);
     }
 
     /**
@@ -53,17 +57,38 @@ class ParticipacionController extends Controller
      */
     public function updateRol(Request $request, $proyectoId, $usuarioId)
     {
-        if (!PermisosHelper::puedeGestionarUsuarios($proyectoId)) {
-            return redirect()->back()->with('error', 'Sin permisos');
-        }
+        $this->ensureAdmin($proyectoId);
 
-        $request->validate(['id_rol' => 'required|exists:roles,id_rols']);
+        $data = $request->validate(['id_rol' => 'required|exists:roles,id_rols']);
 
-        Participar::where('id_proyecto', $proyectoId)
+        $updated = Participar::where('id_proyecto', $proyectoId)
             ->where('id_usuario', $usuarioId)
-            ->where('id_rols', '!=', PermisosHelper::ROL_ADMINISTRADOR)
-            ->update(['id_rols' => $request->id_rol]);
+            ->where('id_rols', '!=', self::ROL_ADMINISTRADOR)
+            ->update(['id_rols' => $data['id_rol']]);
 
-        return redirect()->back()->with('success', 'Rol actualizado');
+        return response()->json([
+            'success' => (bool) $updated,
+            'message' => $updated ? 'Rol actualizado' : 'No se realizó ninguna actualización',
+        ]);
     }
+    /**
+     * Obtener el rol de un usuario en un proyecto consultando la BD.
+     * Si no se pasa $userId, devuelve el rol del usuario autenticado.
+     */
+    private function roleInProject($proyectoId, $userId = null)
+    {
+        $userId = $userId ?? Auth::id();
+        return Participar::where('id_proyecto', $proyectoId)
+            ->where('id_usuario', $userId)
+            ->value('id_rols');
+    }
+
+    /**
+     * Abort 403 unless the authenticated user is admin in the project.
+     */
+    private function ensureAdmin($proyectoId): void
+    {
+        abort_unless($this->roleInProject($proyectoId) === self::ROL_ADMINISTRADOR, 403, 'Sin permisos');
+    }
+
 }
