@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Tareas;
 use App\Models\EstadoTarea;
-use App\Helpers\PermisosHelper;
+use App\Models\Participar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EstadoTareaController extends Controller
 {
@@ -14,42 +15,25 @@ class EstadoTareaController extends Controller
      */
     public function update(Request $request, $tareaId)
     {
-        $tarea = Tareas::find($tareaId);
-        
-        if (!$tarea) {
-            return redirect()->back()->with('error', 'Tarea no encontrada');
+        $tarea = Tareas::find($tareaId) ?: abort(404, 'Tarea no encontrada');
+
+        // Permisos: comprobar siempre en la BD (tabla participar)
+        $usuarioId = session('usuario_id') ?? Auth::id();
+        $rol = Participar::where('id_proyecto', $tarea->id_proyecto)
+            ->where('id_usuario', $usuarioId)
+            ->value('id_rols');
+
+        // Solo admin o propietario de la tarea pueden cambiar estado
+        abort_unless($rol === 1 || $tarea->id_usuario == $usuarioId, 403, 'No tienes permisos para cambiar el estado de esta tarea');
+
+        $data = $request->validate(['nom_estat' => 'required|in:Pendiente,En Progreso,Completada']);
+
+        $estado = EstadoTarea::firstOrNew(['id_tarea' => $tareaId]);
+        $estado->nom_estat = $data['nom_estat'];
+        if (empty($estado->id_estado)) {
+            $estado->id_estado = (EstadoTarea::max('id_estado') ?? 0) + 1;
         }
-
-        // Verificar permisos para cambiar el estado
-        // El administrador puede cambiar cualquier estado
-        // El participante solo puede cambiar el estado de sus propias tareas
-        $usuarioId = session('usuario_id');
-        $esAdmin = PermisosHelper::esAdministrador($tarea->id_proyecto, $usuarioId);
-        $esMiTarea = $tarea->id_usuario == $usuarioId;
-
-        if (!$esAdmin && !$esMiTarea) {
-            return redirect()->back()->with('error', 'No tienes permisos para cambiar el estado de esta tarea');
-        }
-
-        $request->validate([
-            'nom_estat' => 'required|in:Pendiente,En Progreso,Completada'
-        ]);
-
-        // Obtener o crear el estado
-        $estado = EstadoTarea::where('id_tarea', $tareaId)->first();
-        
-        if ($estado) {
-            $estado->nom_estat = $request->nom_estat;
-            $estado->save();
-        } else {
-            // Si no existe, crear el estado
-            $nextEstadoId = (EstadoTarea::max('id_estado') ?? 0) + 1;
-            EstadoTarea::create([
-                'id_estado' => $nextEstadoId,
-                'nom_estat' => $request->nom_estat,
-                'id_tarea' => $tareaId
-            ]);
-        }
+        $estado->save();
 
         return redirect()->back()->with('success', 'Estado actualizado correctamente');
     }
