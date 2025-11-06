@@ -270,8 +270,15 @@ h1 {
 .col-fecha {
     width: 120px;
     text-align: center;
-    color: white;
     font-weight: 500;
+}
+
+th.col-fecha {
+    color: white;
+}
+
+td.col-fecha {
+    color: black;
 }
 
 .col-permisos {
