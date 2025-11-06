@@ -62,4 +62,37 @@ class Proyecto extends Model
             'id_usuario'
         )->withPivot('id_rol');
     }
+
+    /**
+     * Verificar si un usuario es administrador del proyecto
+     */
+    public function esAdministrador($usuarioId): bool
+    {
+        return $this->participar()
+            ->where('id_usuario', $usuarioId)
+            ->where('id_rols', 1)
+            ->exists();
+    }
+
+    /**
+     * Obtener la participación de un usuario en el proyecto
+     */
+    public function participacionDeUsuario($usuarioId)
+    {
+        return $this->participar()
+            ->where('id_usuario', $usuarioId)
+            ->first();
+    }
+
+    /**
+     * Agregar un participante al proyecto
+     */
+    public function agregarParticipante($usuarioId, $rolId = 1)
+    {
+        return $this->participar()->create([
+            'id_usuario' => $usuarioId,
+            'id_proyecto' => $this->id_proyecto,
+            'id_rols' => $rolId
+        ]);
+    }
 }

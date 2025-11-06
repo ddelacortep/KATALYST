@@ -3,13 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Proyecto;
-use App\Models\Participar;
 use App\Models\Rols;
 use App\Models\Usuario;
-use App\Helpers\PermisosHelper;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class ProyectoController extends Controller
 {
@@ -41,34 +38,21 @@ class ProyectoController extends Controller
         ]);
 
         $proyecto = Proyecto::create([
-            'id_proyecto' => DB::table('proyecto')->max('id_proyecto') + 1,
+            'id_proyecto' => Proyecto::max('id_proyecto') + 1,
             'nom_proyecto' => $request->nombre_del_proyecto,
-            'slug' => Proyecto::generateSlug($request->nombre_del_proyecto),
+            'slug' => Proyecto::generateSlug($request->nombre_del_proyecto)
         ]);
         
-        // Asignar usuario autenticado como administrador
-        Participar::create([
-            'id_usuario' => Auth::id(),
-            'id_proyecto' => $proyecto->id_proyecto,
-            'id_rols' => 1, // Administrador
-        ]);
+        $rolAdmin = Rols::firstOrCreate(['id_rols' => 1], ['nom_rols' => 'Administrador']);
         
-        // Actualizar cache de sesión
-        session(["user_projects.{$proyecto->id_proyecto}" => 1]);
+        $proyecto->agregarParticipante(Session::get('usuario_id'), $rolAdmin->id_rols);
         
-        // Agregar colaborador adicional si existe
-        if ($request->usuario) {
-            $colaborador = Usuario::where('id_usuario', $request->usuario)
-                                ->orWhere('nom_usuario', $request->usuario)
-                                ->first();
-            
-            if ($colaborador && $colaborador->id_usuario != Auth::id()) {
-                Participar::create([
-                    'id_usuario' => $colaborador->id_usuario,
-                    'id_proyecto' => $proyecto->id_proyecto,
-                    'id_rols' => 2, // Participante
-                ]);
-            }
+        $colaborador = Usuario::where('id_usuario', $request->usuario)
+            ->orWhere('nom_usuario', $request->usuario)
+            ->first();
+        
+        if ($colaborador && $colaborador->id_usuario != Session::get('usuario_id')) {
+            $proyecto->agregarParticipante($colaborador->id_usuario, $rolAdmin->id_rols);
         }
 
         return redirect()->route('proyectos')->with('success', 'Proyecto creado correctamente');
@@ -79,26 +63,24 @@ class ProyectoController extends Controller
      */
     public function show(Proyecto $proyecto)
     {
-        // Verificar acceso del usuario al proyecto
-        if (!PermisosHelper::obtenerRolEnProyecto($proyecto->id_proyecto)) {
-            return redirect()->route('proyectos')->with('error', 'No tienes acceso a este proyecto');
-        }
-        
         $proyecto->load(['tareas.usuario', 'participar.usuario', 'participar.rol']);
         
-        $permisos = [
-            'puede_crear_tareas' => PermisosHelper::puedeCrearTareas($proyecto->id_proyecto),
-            'puede_gestionar_usuarios' => PermisosHelper::puedeGestionarUsuarios($proyecto->id_proyecto),
-            'es_administrador' => PermisosHelper::esAdministrador($proyecto->id_proyecto),
-            'es_participante' => PermisosHelper::esParticipante($proyecto->id_proyecto),
-            'rol_actual' => PermisosHelper::obtenerRolEnProyecto($proyecto->id_proyecto)
-        ];
+        $participacion = $proyecto->participar->firstWhere('id_usuario', Session::get('usuario_id'));
+        
+        $esAdministrador = $participacion?->id_rols === 1;
+        $esParticipante = $participacion?->id_rols === 2;
         
         return view('proyecto.show', [
             'proyecto' => $proyecto,
+            'permisos' => [
+                'puede_crear_tareas' => $esAdministrador || $esParticipante,
+                'puede_gestionar_usuarios' => $esAdministrador,
+                'es_administrador' => $esAdministrador,
+                'es_participante' => $esParticipante,
+                'rol_actual' => $participacion?->rol->nom_rols
+            ],
             'todosUsuarios' => Usuario::all(),
-            'roles' => Rols::all(),
-            'permisos' => $permisos
+            'roles' => Rols::all()
         ]);
     }
 
@@ -123,15 +105,11 @@ class ProyectoController extends Controller
      */
     public function destroy(Proyecto $proyecto)
     {
-        if (!PermisosHelper::esAdministrador($proyecto->id_proyecto)) {
-            return redirect()->route('proyectos')->with('error', 'Solo el administrador puede eliminar el proyecto');
+        try {
+            $proyecto->delete();
+            return redirect()->route('proyectos')->with('success', 'Proyecto eliminado correctamente');
+        } catch (\Exception $e) {
+            return redirect()->route('proyectos')->with('error', 'Error al eliminar el proyecto');
         }
-
-        $proyecto->delete();
-        
-        // Limpiar de sesión
-        session()->forget("user_projects.{$proyecto->id_proyecto}");
-        
-        return redirect()->route('proyectos')->with('success', 'Proyecto eliminado correctamente');
     }
 }
