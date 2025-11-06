@@ -1923,6 +1923,7 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<Usuario>|Usuario whereEmail($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Usuario>|Usuario wherePassword($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Usuario>|Usuario whereFechaCreacion($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Usuario>|Usuario informacionBasica()
      * @method static \Illuminate\Database\Eloquent\Builder<Usuario>|Usuario newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Usuario>|Usuario newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Usuario>|Usuario query()
