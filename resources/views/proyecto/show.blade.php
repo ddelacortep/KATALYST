@@ -70,9 +70,9 @@
                         <tbody>
                             @foreach($proyecto->tareas as $index => $tarea)
                                 @php
-                                    $puedeEditar = $permisos['es_administrador'] || ($permisos['es_participante'] && $tarea->id_usuario == session('usuario_id'));
-                                    $puedeEliminar = $permisos['es_administrador'] || ($permisos['es_participante'] && $tarea->id_usuario == session('usuario_id'));
-                                    $esMiTarea = $tarea->id_usuario == session('usuario_id');
+                                    $puedeEditar = $permisos['es_administrador'] || ($permisos['es_participante'] && $tarea->id_usuario == auth()->id());
+                                    $puedeEliminar = $permisos['es_administrador'] || ($permisos['es_participante'] && $tarea->id_usuario == auth()->id());
+                                    $esMiTarea = $tarea->id_usuario == auth()->id();
                                 @endphp
                                 <tr class="{{ $esMiTarea ? 'mi-tarea' : '' }}">
                                     <td class="col-numero">{{ $index + 1 }}</td>
@@ -264,9 +264,9 @@
                         <select id="id_usuario" name="id_usuario">
                             @foreach($proyecto->participar as $participacion)
                                 <option value="{{ $participacion->usuario->id_usuario }}" 
-                                    {{ $participacion->usuario->id_usuario == session('usuario_id') ? 'selected' : '' }}>
+                                    {{ $participacion->usuario->id_usuario == auth()->id() ? 'selected' : '' }}>
                                     {{ $participacion->usuario->nom_usuario }}
-                                    @if($participacion->usuario->id_usuario == session('usuario_id'))
+                                    @if($participacion->usuario->id_usuario == auth()->id())
                                         (Tú)
                                     @endif
                                 </option>
@@ -275,7 +275,7 @@
                         <p class="help-text">💡 Por defecto se te asigna a ti, pero puedes cambiarlo</p>
                     </div>
                 @else
-                    <input type="hidden" name="id_usuario" id="id_usuario_hidden" value="{{ session('usuario_id') }}">
+                    <input type="hidden" name="id_usuario" id="id_usuario_hidden" value="{{ auth()->id() }}">
                     <p class="help-text" id="helpTextUsuario">✏️ La tarea se te asignará automáticamente</p>
                 @endif
 

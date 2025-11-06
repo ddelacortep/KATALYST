@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
+use App\Models\Participar;
 
 class AuthController extends Controller
 {
@@ -24,32 +23,23 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        // Validar los datos
         $request->validate([
             'username' => 'required|string|max:255|unique:usuario,nom_usuario',
             'email' => 'required|email|max:255|unique:usuario,email',
             'password' => 'required|string|min:6|confirmed',
-        ], [
-            'username.unique' => 'Este nombre de usuario ya está en uso.',
-            'email.unique' => 'Este email ya está registrado.',
-            'password.confirmed' => 'Las contraseñas no coinciden.',
         ]);
 
-        // Obtener el siguiente ID disponible
-        $nextUserId = DB::table('usuario')->max('id_usuario') + 1;
+        $usuario = Usuario::create([
+            'id_usuario' => DB::table('usuario')->max('id_usuario') + 1,
+            'nom_usuario' => $request->username,
+            'email' => $request->email,
+            'password' => $request->password,
+        ]);
 
-        // Crear el usuario
-        $usuario = new Usuario();
-        $usuario->id_usuario = $nextUserId;
-        $usuario->nom_usuario = $request->username;
-        $usuario->email = $request->email;
-        $usuario->password = $request->password; // Guardar en texto plano, SIN encriptar
+        Auth::login($usuario);
         
-        $usuario->save();
-
-        // Iniciar sesión automáticamente
-        Session::put('usuario_id', $usuario->id_usuario);
-        Session::put('usuario_nombre', $usuario->nom_usuario);
+        // Inicializar cache de proyectos vacío
+        session(['user_projects' => []]);
 
         return redirect()->route('proyectos')->with('success', '¡Registro exitoso! Bienvenido.');
     }
@@ -67,37 +57,30 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        // Validar los datos
         $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        // Buscar el usuario
         $usuario = Usuario::where('nom_usuario', $request->username)
                         ->orWhere('email', $request->username)
                         ->first();
 
-        // Verificar si el usuario existe
-        if (!$usuario) {
-            return back()->withErrors([
-                'username' => 'Usuario no encontrado.',
-            ])->withInput($request->only('username'));
+        if (!$usuario || $usuario->password !== $request->password) {
+            return back()->withErrors(['username' => 'Credenciales incorrectas.'])
+                        ->withInput($request->only('username'));
         }
 
-        // Comparar la contraseña directamente (texto plano)
-        if ($usuario->password === $request->password) {
-            // Contraseña correcta - iniciar sesión
-            Session::put('usuario_id', $usuario->id_usuario);
-            Session::put('usuario_nombre', $usuario->nom_usuario);
+        Auth::login($usuario);
+        
+        // Cargar proyectos del usuario en sesión
+        $proyectos = Participar::where('id_usuario', $usuario->id_usuario)
+            ->pluck('id_rols', 'id_proyecto')
+            ->toArray();
+        
+        session(['user_projects' => $proyectos]);
 
-            return redirect()->route('proyectos')->with('success', '¡Bienvenido de nuevo, ' . $usuario->nom_usuario . '!');
-        }
-
-        // Si la contraseña no coincide
-        return back()->withErrors([
-            'username' => 'La contraseña es incorrecta.',
-        ])->withInput($request->only('username'));
+        return redirect()->route('proyectos')->with('success', '¡Bienvenido de nuevo, ' . $usuario->nom_usuario . '!');
     }
 
     /**
@@ -105,7 +88,7 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        Session::flush();
+        Auth::logout();
         return redirect()->route('index')->with('success', 'Sesión cerrada correctamente.');
     }
 }

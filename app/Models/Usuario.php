@@ -25,6 +25,29 @@ class Usuario extends Authenticatable
     
     protected $hidden = ['password'];
 
+    /**
+     * Obtener el nombre de usuario para autenticación
+     */
+    public function getAuthIdentifierName()
+    {
+        return 'id_usuario';
+    }
+
+    /**
+     * Obtener el valor del identificador único del usuario.
+     */
+    public function getAuthIdentifier()
+    {
+        return $this->id_usuario;
+    }
+
+    /**
+     * Obtener la contraseña del usuario para autenticación
+     */
+    public function getAuthPassword()
+    {
+        return $this->password;
+    }
 
     public function tareas(): HasMany
     {
@@ -38,6 +61,6 @@ class Usuario extends Authenticatable
             'participar',
             'id_usuario',
             'id_proyecto'
-        )->withPivot('id_rol');
+        )->withPivot('id_rols');
     }
 }
