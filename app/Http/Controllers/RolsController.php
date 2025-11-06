@@ -15,13 +15,9 @@ class RolsController extends Controller
     {
         $roles = Rols::all();
         
-        // Si es una petición AJAX, devolver JSON
-        if (request()->expectsJson()) {
-            return response()->json($roles);
-        }
-        
-        // Si no, devolver vista
-        return view('roles.index', compact('roles'));
+        return request()->expectsJson() 
+            ? response()->json($roles)
+            : view('roles.index', compact('roles'));
     }
 
     /**
@@ -29,29 +25,16 @@ class RolsController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'nom_rols' => 'required|string|max:255',
+        $request->validate(['nom_rols' => 'required|string|max:255']);
+
+        $rol = Rols::create([
+            'id_rols' => DB::table('roles')->max('id_rols') + 1,
+            'nom_rols' => $request->nom_rols
         ]);
 
-        // Obtener el siguiente ID disponible
-        $nextId = DB::table('roles')->max('id_rols') + 1;
-
-        $rol = new Rols();
-        $rol->id_rols = $nextId;
-        $rol->nom_rols = $request->nom_rols;
-        $rol->save();
-
-        // Si es una petición AJAX
-        if ($request->expectsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Rol creado correctamente',
-                'rol' => $rol
-            ], 201);
-        }
-
-        // Si es una petición normal
-        return redirect()->back()->with('success', 'Rol creado correctamente');
+        return $request->expectsJson() 
+            ? response()->json(['success' => true, 'message' => 'Rol creado', 'rol' => $rol], 201)
+            : redirect()->back()->with('success', 'Rol creado');
     }
 
     /**
@@ -59,16 +42,7 @@ class RolsController extends Controller
      */
     public function show($id)
     {
-        $rol = Rols::find($id);
-        
-        if (!$rol) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Rol no encontrado'
-            ], 404);
-        }
-
-        return response()->json($rol);
+        return response()->json(Rols::findOrFail($id));
     }
 
     /**
@@ -76,30 +50,14 @@ class RolsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $rol = Rols::find($id);
+        $request->validate(['nom_rols' => 'required|string|max:255']);
         
-        if (!$rol) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Rol no encontrado'
-            ], 404);
-        }
+        $rol = Rols::findOrFail($id);
+        $rol->update(['nom_rols' => $request->nom_rols]);
 
-        $request->validate([
-            'nom_rols' => 'sometimes|required|string|max:255',
-        ]);
-
-        if ($request->has('nom_rols')) {
-            $rol->nom_rols = $request->nom_rols;
-        }
-
-        $rol->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Rol actualizado correctamente',
-            'rol' => $rol
-        ]);
+        return $request->expectsJson() 
+            ? response()->json(['success' => true, 'message' => 'Rol actualizado', 'rol' => $rol])
+            : redirect()->back()->with('success', 'Rol actualizado');
     }
 
     /**
@@ -107,30 +65,10 @@ class RolsController extends Controller
      */
     public function destroy($id)
     {
-        $rol = Rols::find($id);
-        
-        if (!$rol) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Rol no encontrado'
-            ], 404);
-        }
+        Rols::findOrFail($id)->delete();
 
-        // Verificar si hay participaciones con este rol
-        $participaciones = $rol->participaciones()->count();
-        
-        if ($participaciones > 0) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No se puede eliminar el rol porque tiene usuarios asignados'
-            ], 400);
-        }
-
-        $rol->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Rol eliminado correctamente'
-        ]);
+        return request()->expectsJson() 
+            ? response()->json(['success' => true, 'message' => 'Rol eliminado'])
+            : redirect()->back()->with('success', 'Rol eliminado');
     }
 }

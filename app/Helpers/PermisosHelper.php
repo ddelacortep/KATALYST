@@ -3,113 +3,91 @@
 namespace App\Helpers;
 
 use App\Models\Participar;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 
 class PermisosHelper
 {
-    /**
-     * IDs de roles predefinidos
-     */
     const ROL_ADMINISTRADOR = 1;
     const ROL_PARTICIPANTE = 2;
 
     /**
-     * Obtener el rol del usuario en un proyecto
+     * Obtener el rol del usuario autenticado en un proyecto (desde sesión)
      */
-    public static function obtenerRolEnProyecto($idProyecto, $idUsuario = null)
+    public static function obtenerRolEnProyecto($idProyecto)
     {
-        $idUsuario = $idUsuario ?? Session::get('usuario_id');
-        
-        if (!$idUsuario) {
-            return null;
-        }
-
-        $participacion = Participar::where('id_proyecto', $idProyecto)
-            ->where('id_usuario', $idUsuario)
-            ->first();
-
-        return $participacion ? $participacion->id_rols : null;
+        return session("user_projects.{$idProyecto}");
     }
 
     /**
      * Verificar si el usuario es administrador del proyecto
      */
-    public static function esAdministrador($idProyecto, $idUsuario = null)
+    public static function esAdministrador($idProyecto)
     {
-        $rol = self::obtenerRolEnProyecto($idProyecto, $idUsuario);
-        return $rol === self::ROL_ADMINISTRADOR;
+        return self::obtenerRolEnProyecto($idProyecto) === self::ROL_ADMINISTRADOR;
     }
 
     /**
      * Verificar si el usuario es participante del proyecto
      */
-    public static function esParticipante($idProyecto, $idUsuario = null)
+    public static function esParticipante($idProyecto)
     {
-        $rol = self::obtenerRolEnProyecto($idProyecto, $idUsuario);
-        return $rol === self::ROL_PARTICIPANTE;
+        return self::obtenerRolEnProyecto($idProyecto) === self::ROL_PARTICIPANTE;
     }
 
     /**
      * Verificar si el usuario puede crear tareas
-     * Tanto Administrador como Participante pueden crear tareas
      */
-    public static function puedeCrearTareas($idProyecto, $idUsuario = null)
+    public static function puedeCrearTareas($idProyecto)
     {
-        $rol = self::obtenerRolEnProyecto($idProyecto, $idUsuario);
-        return in_array($rol, [self::ROL_ADMINISTRADOR, self::ROL_PARTICIPANTE]);
+        return in_array(self::obtenerRolEnProyecto($idProyecto), [self::ROL_ADMINISTRADOR, self::ROL_PARTICIPANTE]);
     }
 
     /**
      * Verificar si el usuario puede editar una tarea
-     * Administrador puede editar todas
-     * Participante puede editar solo las suyas
      */
-    public static function puedeEditarTarea($tarea, $idUsuario = null)
+    public static function puedeEditarTarea($tarea)
     {
-        $idUsuario = $idUsuario ?? Session::get('usuario_id');
-        $idProyecto = $tarea->id_proyecto;
-        $rol = self::obtenerRolEnProyecto($idProyecto, $idUsuario);
-
-        if ($rol === self::ROL_ADMINISTRADOR) {
-            return true;
-        }
-
-        if ($rol === self::ROL_PARTICIPANTE && $tarea->id_usuario == $idUsuario) {
-            return true;
-        }
-
-        return false;
+        $rol = self::obtenerRolEnProyecto($tarea->id_proyecto);
+        return $rol === self::ROL_ADMINISTRADOR || ($rol === self::ROL_PARTICIPANTE && $tarea->id_usuario == Auth::id());
     }
 
     /**
      * Verificar si el usuario puede eliminar una tarea
-     * Administrador puede eliminar todas las tareas
-     * Participante puede eliminar solo las suyas
      */
-    public static function puedeEliminarTarea($tarea, $idUsuario = null)
+    public static function puedeEliminarTarea($tarea)
     {
-        $idUsuario = $idUsuario ?? Session::get('usuario_id');
-        $idProyecto = $tarea->id_proyecto;
-        $rol = self::obtenerRolEnProyecto($idProyecto, $idUsuario);
-
-        if ($rol === self::ROL_ADMINISTRADOR) {
-            return true;
-        }
-
-        if ($rol === self::ROL_PARTICIPANTE && $tarea->id_usuario == $idUsuario) {
-            return true;
-        }
-
-        return false;
+        $rol = self::obtenerRolEnProyecto($tarea->id_proyecto);
+        return $rol === self::ROL_ADMINISTRADOR || ($rol === self::ROL_PARTICIPANTE && $tarea->id_usuario == Auth::id());
     }
 
     /**
      * Verificar si el usuario puede gestionar usuarios del proyecto
-     * Solo el administrador puede
      */
-    public static function puedeGestionarUsuarios($idProyecto, $idUsuario = null)
+    public static function puedeGestionarUsuarios($idProyecto)
     {
-        return self::esAdministrador($idProyecto, $idUsuario);
+        return self::esAdministrador($idProyecto);
+    }
+
+    /**
+     * Actualizar cache de permisos cuando cambian
+     */
+    public static function actualizarCache($idProyecto, $idUsuario = null)
+    {
+        $idUsuario = $idUsuario ?? Auth::id();
+        
+        $rol = Participar::where('id_proyecto', $idProyecto)
+            ->where('id_usuario', $idUsuario)
+            ->value('id_rols');
+        
+        session(["user_projects.{$idProyecto}" => $rol]);
+    }
+
+    /**
+     * Limpiar cache de permisos
+     */
+    public static function limpiarCache()
+    {
+        session()->forget('user_projects');
     }
 
     /**
@@ -117,12 +95,10 @@ class PermisosHelper
      */
     public static function obtenerNombreRol($idRol)
     {
-        $nombres = [
+        return [
             self::ROL_ADMINISTRADOR => 'Administrador',
             self::ROL_PARTICIPANTE => 'Participante'
-        ];
-
-        return $nombres[$idRol] ?? 'Desconocido';
+        ][$idRol] ?? 'Desconocido';
     }
 
     /**
@@ -130,11 +106,9 @@ class PermisosHelper
      */
     public static function obtenerDescripcionRol($idRol)
     {
-        $descripciones = [
+        return [
             self::ROL_ADMINISTRADOR => 'Creador del proyecto. Puede crear y asignar tareas a cualquier usuario, y eliminar cualquier tarea.',
             self::ROL_PARTICIPANTE => 'Puede ver todas las tareas y crear tareas asignadas a sí mismo. Solo puede eliminar sus propias tareas.'
-        ];
-
-        return $descripciones[$idRol] ?? '';
+        ][$idRol] ?? '';
     }
 }

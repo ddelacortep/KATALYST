@@ -14,8 +14,8 @@
         <div class="header">
             <img class="logo" src="{{ asset('img/logo.png') }}" alt="">
             <div class="user-section">
-                @if(session('usuario_nombre'))
-                    <span class="username-display">{{ session('usuario_nombre') }}</span>
+                @auth
+                    <span class="username-display">{{ auth()->user()->nom_usuario }}</span>
                     <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                         @csrf
                         <button type="submit" class="btn-logout" title="Cerrar sesión">
@@ -35,7 +35,7 @@
                         <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
                         <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
                     </svg>
-                @endif
+                @endauth
             </div>
         </div>
 
