@@ -10,8 +10,8 @@ class TareasController extends Controller
     public function index($proyectoId = null)
     {
         $tareas = $proyectoId 
-            ? Tareas::where('id_proyecto', $proyectoId)->get()
-            : Tareas::all();
+            ? Tareas::with(['usuario', 'estadoTarea'])->where('id_proyecto', $proyectoId)->get()
+            : Tareas::with(['usuario', 'estadoTarea'])->get();
         
         return response()->json($tareas);
     }
@@ -39,12 +39,12 @@ class TareasController extends Controller
 
     public function show($id)
     {
-        return response()->json(Tareas::findOrFail($id));
+        return response()->json(Tareas::with(['usuario', 'estadoTarea', 'proyecto'])->findOrFail($id));
     }
 
     public function update(Request $request, $id)
     {
-        $tarea = Tareas::findOrFail($id);
+        $tarea = Tareas::with('proyecto')->findOrFail($id);
         
         if (!$tarea->puedeEditar()) {
             return $request->expectsJson() 
@@ -57,15 +57,15 @@ class TareasController extends Controller
             'id_usuario' => 'sometimes|integer|exists:usuario,id_usuario'
         ]);
 
-        $tarea->update(array_filter([
+        $tarea->fill(array_filter([
             'nom_tarea' => $request->nom_tarea,
             'id_usuario' => $request->has('id_usuario') && $tarea->esAdministrador() 
                 ? $request->id_usuario 
                 : null
-        ]));
+        ]))->save();
 
         return $request->expectsJson() 
-            ? response()->json(['success' => true, 'message' => 'Tarea actualizada', 'tarea' => $tarea])
+            ? response()->json(['success' => true, 'message' => 'Tarea actualizada', 'tarea' => $tarea->load(['usuario', 'estadoTarea'])])
             : back()->with('success', 'Tarea actualizada');
     }
 
