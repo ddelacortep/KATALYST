@@ -30,11 +30,17 @@ class TareasController extends Controller
                 : back()->with('error', 'No tienes permisos para crear tareas');
         }
 
-        $tarea = Tareas::crearConEstado($request->nom_tarea, $request->id_proyecto, $request->id_usuario);
+        try {
+            $tarea = Tareas::crearConEstado($request->nom_tarea, $request->id_proyecto, $request->id_usuario);
 
-        return $request->expectsJson() 
-            ? response()->json(['success' => true, 'message' => 'Tarea creada', 'tarea' => $tarea], 201)
-            : back()->with('success', 'Tarea creada correctamente');
+            return $request->expectsJson() 
+                ? response()->json(['success' => true, 'message' => 'Tarea creada', 'tarea' => $tarea], 201)
+                : back()->with('success', 'Tarea creada correctamente');
+        } catch (\Exception $e) {
+            return $request->expectsJson() 
+                ? response()->json(['success' => false, 'message' => 'Error al crear la tarea: ' . $e->getMessage()], 500)
+                : back()->with('error', 'Error al crear la tarea');
+        }
     }
 
     public function show($id)

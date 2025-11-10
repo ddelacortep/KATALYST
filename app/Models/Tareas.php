@@ -69,13 +69,14 @@ class Tareas extends Model
     public function puedeEditar()
     {
         $rol = session("user_projects.{$this->id_proyecto}");
-        return $rol == 1 || $this->id_usuario == session('user_id');
+        return $rol == 3 || $rol == 1 || $this->id_usuario == session('user_id');
     }
 
     // Verificar si el usuario puede eliminar
     public function puedeEliminar()
     {
-        return session("user_projects.{$this->id_proyecto}") == 1;
+        $rol = session("user_projects.{$this->id_proyecto}");
+        return $rol == 3 || $rol == 1 || $this->id_usuario == session('user_id');
     }
 
     // Verificar si puede crear tareas en el proyecto
@@ -87,6 +88,13 @@ class Tareas extends Model
     // Verificar si es administrador del proyecto
     public function esAdministrador()
     {
-        return session("user_projects.{$this->id_proyecto}") == 1;
+        $rol = session("user_projects.{$this->id_proyecto}");
+        return $rol == 3 || $rol == 1;
+    }
+
+    // Verificar si es SuperAdmin del proyecto
+    public function esSuperAdmin()
+    {
+        return session("user_projects.{$this->id_proyecto}") == 3;
     }
 }

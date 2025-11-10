@@ -24,38 +24,30 @@ class ProyectoController extends Controller
     {
         $request->validate([
             'nombre_del_proyecto' => 'required|string|max:255',
-            'usuario' => 'nullable|string|max:255',
         ]);
 
-        $proyecto = Proyecto::create([
-            'id_proyecto' => Proyecto::max('id_proyecto') + 1,
-            'nom_proyecto' => $request->nombre_del_proyecto,
-            'slug' => Proyecto::generateSlug($request->nombre_del_proyecto)
-        ]);
-        
-        $rolAdmin = Rols::firstOrCreate(['id_rols' => 1], ['nom_rols' => 'Administrador']);
-        
-        Participar::create([
-            'id_usuario' => session('user_id'),
-            'id_proyecto' => $proyecto->id_proyecto,
-            'id_rols' => $rolAdmin->id_rols
-        ]);
-        
-        // Actualizar sesión con el nuevo proyecto
-        session(["user_projects.{$proyecto->id_proyecto}" => 1]);
-        session()->push('accessible_projects', $proyecto->id_proyecto);
-        
-        $colaborador = Usuario::where('id_usuario', $request->usuario)->orWhere('nom_usuario', $request->usuario)->first();
-        
-        if ($colaborador && $colaborador->id_usuario != session('user_id')) {
-            Participar::create([
-                'id_usuario' => $colaborador->id_usuario,
-                'id_proyecto' => $proyecto->id_proyecto,
-                'id_rols' => $rolAdmin->id_rols
+        try {
+            $proyecto = Proyecto::create([
+                'id_proyecto' => Proyecto::max('id_proyecto') + 1,
+                'nom_proyecto' => $request->nombre_del_proyecto,
+                'slug' => Proyecto::generateSlug($request->nombre_del_proyecto)
             ]);
-        }
+            
+            // Creador del proyecto es SuperAdmin (rol 3)
+            Participar::create([
+                'id_usuario' => session('user_id'),
+                'id_proyecto' => $proyecto->id_proyecto,
+                'id_rols' => 3 // SuperAdmin
+            ]);
+            
+            // Actualizar sesión con el nuevo proyecto como SuperAdmin
+            session(["user_projects.{$proyecto->id_proyecto}" => 3]);
+            session()->push('accessible_projects', $proyecto->id_proyecto);
 
-        return redirect()->route('proyectos')->with('success', 'Proyecto creado correctamente');
+            return redirect()->route('proyectos')->with('success', 'Proyecto creado correctamente');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Error al crear el proyecto: ' . $e->getMessage());
+        }
     }
 
     public function show(Proyecto $proyecto)
@@ -73,9 +65,10 @@ class ProyectoController extends Controller
             'proyecto' => $proyecto,
             'permisos' => [
                 'puede_crear_tareas' => $rolUsuario !== null,
-                'puede_gestionar_usuarios' => $rolUsuario == 1,
+                'puede_gestionar_usuarios' => $rolUsuario == 3 || $rolUsuario == 1,
                 'es_administrador' => $rolUsuario == 1,
                 'es_participante' => $rolUsuario == 2,
+                'es_superadmin' => $rolUsuario == 3,
                 'rol_actual' => $rolUsuario
             ],
             'todosUsuarios' => Usuario::all(),
@@ -95,8 +88,8 @@ class ProyectoController extends Controller
 
     public function destroy(Proyecto $proyecto)
     {
-        if (session("user_projects.{$proyecto->id_proyecto}") != 1) {
-            return redirect()->route('proyectos')->with('error', 'Solo el administrador puede eliminar el proyecto');
+        if (session("user_projects.{$proyecto->id_proyecto}") != 3) {
+            return redirect()->route('proyectos')->with('error', 'Solo el SuperAdmin puede eliminar el proyecto');
         }
 
         $proyecto->delete();

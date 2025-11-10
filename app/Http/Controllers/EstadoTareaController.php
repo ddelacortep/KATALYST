@@ -21,14 +21,13 @@ class EstadoTareaController extends Controller
             'nom_estat' => 'required|in:Pendiente,En Progreso,Completada'
         ]);
 
-        EstadoTarea::updateOrCreate(
-            ['id_tarea' => $tareaId],
-            [
-                'id_estado' => EstadoTarea::max('id_estado') + 1,
-                'nom_estat' => $request->nom_estat
-            ]
-        );
+        try {
+            EstadoTarea::where('id_tarea', $tareaId)
+                ->update(['nom_estat' => $request->nom_estat]);
 
-        return back()->with('success', 'Estado actualizado');
+            return back()->with('success', 'Estado actualizado correctamente');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al actualizar el estado');
+        }
     }
 }

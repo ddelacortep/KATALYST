@@ -7,15 +7,16 @@ use Illuminate\Http\Request;
 
 class ParticipacionController extends Controller
 {
+    private const ROL_SUPERADMIN = 3;
     private const ROL_ADMINISTRADOR = 1;
 
     public function store(Request $request, $proyectoId)
     {
-        $this->ensureAdmin($proyectoId);
+        $this->ensureSuperAdmin($proyectoId);
 
         $data = $request->validate([
             'id_usuario' => 'required|exists:usuario,id_usuario',
-            'id_rol' => 'required|exists:roles,id_rols',
+            'id_rol' => 'required|exists:roles,id_rols|in:1,2', // Solo puede asignar Admin o Participante
         ]);
 
         Participar::firstOrCreate(
@@ -30,11 +31,21 @@ class ParticipacionController extends Controller
 
     public function destroy($proyectoId, $usuarioId)
     {
-        $this->ensureAdmin($proyectoId);
+        $this->ensureSuperAdmin($proyectoId);
+
+        // No permitir eliminar al SuperAdmin
+        $participacion = Participar::where('id_proyecto', $proyectoId)
+            ->where('id_usuario', $usuarioId)
+            ->first();
+
+        if ($participacion && $participacion->id_rols == self::ROL_SUPERADMIN) {
+            return request()->expectsJson()
+                ? response()->json(['success' => false, 'message' => 'No se puede eliminar al SuperAdmin'], 403)
+                : back()->with('error', 'No se puede eliminar al SuperAdmin del proyecto');
+        }
 
         $deleted = Participar::where('id_proyecto', $proyectoId)
             ->where('id_usuario', $usuarioId)
-            ->where('id_rols', '!=', self::ROL_ADMINISTRADOR)
             ->delete();
 
         $mensaje = $deleted ? 'Usuario eliminado del proyecto' : 'No se eliminó ninguna participación';
@@ -46,24 +57,46 @@ class ParticipacionController extends Controller
 
     public function updateRol(Request $request, $proyectoId, $usuarioId)
     {
-        $this->ensureAdmin($proyectoId);
+        $this->ensureSuperAdmin($proyectoId);
 
-        $data = $request->validate(['id_rol' => 'required|exists:roles,id_rols']);
+        $data = $request->validate(['id_rol' => 'required|exists:roles,id_rols|in:1,2']); // Solo Admin o Participante
 
-        $updated = Participar::where('id_proyecto', $proyectoId)
+        // Buscar participación actual
+        $participacion = Participar::where('id_proyecto', $proyectoId)
             ->where('id_usuario', $usuarioId)
-            ->where('id_rols', '!=', self::ROL_ADMINISTRADOR)
-            ->update(['id_rols' => $data['id_rol']]);
+            ->first();
 
-        $mensaje = $updated ? 'Rol actualizado' : 'No se realizó ninguna actualización';
+        if (!$participacion) {
+            return $request->expectsJson()
+                ? response()->json(['success' => false, 'message' => 'Usuario no encontrado en el proyecto'], 404)
+                : back()->with('error', 'Usuario no encontrado en el proyecto');
+        }
+
+        // No permitir cambiar el rol del SuperAdmin
+        if ($participacion->id_rols == self::ROL_SUPERADMIN) {
+            return $request->expectsJson()
+                ? response()->json(['success' => false, 'message' => 'No se puede cambiar el rol del SuperAdmin'], 403)
+                : back()->with('error', 'No se puede cambiar el rol del SuperAdmin');
+        }
+
+        // Actualizar el rol usando update() debido a la clave primaria compuesta
+        Participar::where('id_proyecto', $proyectoId)
+            ->where('id_usuario', $usuarioId)
+            ->update(['id_rols' => (int) $data['id_rol']]);
 
         return $request->expectsJson()
-            ? response()->json(['success' => (bool) $updated, 'message' => $mensaje])
-            : back()->with($updated ? 'success' : 'info', $mensaje);
+            ? response()->json(['success' => true, 'message' => 'Rol actualizado correctamente'])
+            : back()->with('success', 'Rol actualizado correctamente');
+    }
+
+    private function ensureSuperAdmin($proyectoId): void
+    {
+        abort_unless(session("user_projects.{$proyectoId}") === self::ROL_SUPERADMIN, 403, 'Solo el SuperAdmin puede realizar esta acción');
     }
 
     private function ensureAdmin($proyectoId): void
     {
-        abort_unless(session("user_projects.{$proyectoId}") === self::ROL_ADMINISTRADOR, 403, 'Sin permisos');
+        $rol = session("user_projects.{$proyectoId}");
+        abort_unless($rol === self::ROL_SUPERADMIN || $rol === self::ROL_ADMINISTRADOR, 403, 'Sin permisos');
     }
 }

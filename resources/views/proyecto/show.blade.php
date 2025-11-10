@@ -174,18 +174,30 @@
 
             <div class="usuarios-list">
                 @forelse($proyecto->participar as $participacion)
+                    @php
+                        // SuperAdmin (3) puede cambiar rol de Admin (1) y Participante (2)
+                        // Admin (1) solo puede cambiar rol de Participante (2)
+                        // Nadie puede cambiar el rol del SuperAdmin (3)
+                        $puedeEditarRol = $permisos['puede_gestionar_usuarios'] && 
+                                          $participacion->id_rols != 3 && // No se puede cambiar SuperAdmin
+                                          ($permisos['es_superadmin'] || $participacion->id_rols == 2); // SuperAdmin puede cambiar todos excepto SuperAdmin, Admin solo Participantes
+                        
+                        $puedeEliminar = $permisos['puede_gestionar_usuarios'] && 
+                                         $participacion->id_rols != 3 && // No se puede eliminar SuperAdmin
+                                         ($permisos['es_superadmin'] || $participacion->id_rols == 2); // SuperAdmin puede eliminar todos excepto SuperAdmin, Admin solo Participantes
+                    @endphp
                     <div class="usuario-card">
                         <div class="usuario-info">
                             <h3>{{ $participacion->usuario->nom_usuario }}</h3>
                             <p>{{ $participacion->usuario->email }}</p>
                         </div>
                         <div class="usuario-rol">
-                            @if($permisos['puede_gestionar_usuarios'] && $participacion->id_rols != 1)
+                            @if($puedeEditarRol)
                                 <form action="{{ route('participacion.updateRol', [$proyecto->id_proyecto, $participacion->id_usuario]) }}" method="POST" class="form-inline">
                                     @csrf
                                     @method('PUT')
                                     <select name="id_rol" class="select-rol" onchange="this.form.submit()">
-                                        @foreach($roles as $rol)
+                                        @foreach($roles->whereIn('id_rols', [1, 2]) as $rol)
                                             <option value="{{ $rol->id_rols }}" {{ $participacion->id_rols == $rol->id_rols ? 'selected' : '' }}>
                                                 {{ $rol->nom_rols }}
                                             </option>
@@ -195,12 +207,12 @@
                             @else
                                 <span class="badge-rol badge-{{ $participacion->id_rols }}">
                                     {{ $participacion->rol->nom_rols ?? 'Sin rol' }}
-                                    @if($participacion->id_rols == 1) 👑 @endif
+                                    @if($participacion->id_rols == 3) 👑 @elseif($participacion->id_rols == 1) �️ @endif
                                 </span>
                             @endif
                         </div>
                         <div class="usuario-actions">
-                            @if($permisos['puede_gestionar_usuarios'] && $participacion->id_rols != 1)
+                            @if($puedeEliminar)
                                 <form action="{{ route('participacion.destroy', [$proyecto->id_proyecto, $participacion->id_usuario]) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este usuario del proyecto?')">
                                     @csrf
                                     @method('DELETE')
