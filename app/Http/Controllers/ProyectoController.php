@@ -36,15 +36,24 @@ class ProyectoController extends Controller
         
         $rolAdmin = Rols::firstOrCreate(['id_rols' => 1], ['nom_rols' => 'Administrador']);
         
+        $userId = session('user_id') ?? \Illuminate\Support\Facades\Auth::id();
+        
         Participar::create([
-            'id_usuario' => Session::get('usuario_id'),
+            'id_usuario' => $userId,
             'id_proyecto' => $proyecto->id_proyecto,
             'id_rols' => $rolAdmin->id_rols
         ]);
         
-        $colaborador = Usuario::where('id_usuario', $request->usuario)->orWhere('nom_usuario', $request->usuario)->first();
+        // Buscar colaborador solo por nom_usuario (o email si es numérico) para evitar error de conversión
+        if ($request->usuario) {
+            $colaborador = Usuario::where('nom_usuario', $request->usuario)
+                ->orWhere('email', $request->usuario)
+                ->first();
+        } else {
+            $colaborador = null;
+        }
         
-        if ($colaborador && $colaborador->id_usuario != Session::get('usuario_id')) {
+        if ($colaborador && $colaborador->id_usuario != $userId) {
             Participar::create([
                 'id_usuario' => $colaborador->id_usuario,
                 'id_proyecto' => $proyecto->id_proyecto,
@@ -59,7 +68,8 @@ class ProyectoController extends Controller
     {
         $proyecto->load(['tareas.usuario', 'participar.usuario', 'participar.rol']);
         
-        $participacion = $proyecto->participar->firstWhere('id_usuario', Session::get('usuario_id'));
+        $userId = session('user_id') ?? \Illuminate\Support\Facades\Auth::id();
+        $participacion = $proyecto->participar->firstWhere('id_usuario', $userId);
         $esAdministrador = $participacion?->id_rols === 1;
         $esParticipante = $participacion?->id_rols === 2;
         

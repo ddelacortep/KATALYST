@@ -61,7 +61,8 @@ class Usuario extends Authenticatable
             'participar',
             'id_usuario',
             'id_proyecto'
-        )->withPivot('id_rols');
+        )->withPivot('id_rols')
+        ->select('proyecto.*', 'participar.id_rols');
     }
 
     /**
