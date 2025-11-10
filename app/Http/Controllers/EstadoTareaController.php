@@ -4,22 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Tareas;
 use App\Models\EstadoTarea;
-use App\Helpers\PermisosHelper;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class EstadoTareaController extends Controller
 {
-    /**
-     * Actualizar el estado de una tarea
-     */
     public function update(Request $request, $tareaId)
     {
         $tarea = Tareas::findOrFail($tareaId);
         
-        // Verificar permisos
-        if (!PermisosHelper::esAdministrador($tarea->id_proyecto) && $tarea->id_usuario != Auth::id()) {
-            return redirect()->back()->with('error', 'Sin permisos para cambiar el estado');
+        // Verificar permisos usando sesión
+        if (!$tarea->puedeEditar()) {
+            return back()->with('error', 'Sin permisos para cambiar el estado');
         }
 
         $request->validate([
@@ -34,6 +29,6 @@ class EstadoTareaController extends Controller
             ]
         );
 
-        return redirect()->back()->with('success', 'Estado actualizado');
+        return back()->with('success', 'Estado actualizado');
     }
 }

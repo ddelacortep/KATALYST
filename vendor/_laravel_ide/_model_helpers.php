@@ -9,8 +9,7 @@ namespace App\Models {
      * @property int $id_tarea
      * @property string $nom_estat
      * @property int $id_estado
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Tareas> $tareas
-     * @property-read int|null $tareas_count
+     * @property-read \App\Models\Tareas $tarea
      * @method static \Illuminate\Database\Eloquent\Builder<EstadoTarea>|EstadoTarea whereIdEstado($value)
      * @method static \Illuminate\Database\Eloquent\Builder<EstadoTarea>|EstadoTarea whereNomEstat($value)
      * @method static \Illuminate\Database\Eloquent\Builder<EstadoTarea>|EstadoTarea whereIdTarea($value)

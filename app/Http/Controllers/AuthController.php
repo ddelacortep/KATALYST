@@ -29,6 +29,7 @@ class AuthController extends Controller
         ]);
 
         Auth::login($usuario);
+        $request->session()->regenerate();
         
         session([
             'user_id' => $usuario->id_usuario,
@@ -38,7 +39,7 @@ class AuthController extends Controller
             'accessible_projects' => []
         ]);
 
-        return redirect()->route('proyectos')->with('success', '¡Registro exitoso! Bienvenido.');
+        return redirect()->intended(route('proyectos'))->with('success', '¡Registro exitoso! Bienvenido.');
     }
 
     public function showLoginForm()
@@ -57,12 +58,16 @@ class AuthController extends Controller
             return back()->withErrors(['username' => 'Credenciales incorrectas.'])->withInput($request->only('username'));
         }
 
-        Auth::login($usuario);
-        
+        // Cargar proyectos antes de hacer login
         $proyectosUsuario = $usuario->proyectos()
-            ->pluck('id_rols', 'id_proyecto')
+            ->pluck('participar.id_rols', 'participar.id_proyecto')
             ->toArray();
+
+        // Autenticar usuario
+        Auth::login($usuario);
+        $request->session()->regenerate();
         
+        // Establecer sesión después del login
         session([
             'user_id' => $usuario->id_usuario,
             'user_name' => $usuario->nom_usuario,
@@ -71,7 +76,7 @@ class AuthController extends Controller
             'accessible_projects' => array_keys($proyectosUsuario)
         ]);
 
-        return redirect()->route('proyectos')->with('success', "¡Bienvenido de nuevo, {$usuario->nom_usuario}!");
+        return redirect()->intended(route('proyectos'))->with('success', "¡Bienvenido de nuevo, {$usuario->nom_usuario}!");
     }
 
     public function logout()
