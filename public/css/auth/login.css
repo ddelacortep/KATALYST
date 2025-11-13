@@ -4,27 +4,29 @@
  * --------------------------------
  */
 
-
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: "Lexend Deca", sans-serif;
+    background-color: #222222;
+}
 
 body {
     display: flex;
     flex-direction: column; /* main y footer apilados verticalmente */
     justify-content: space-between; /* main centrado, footer abajo */
     min-height: 100vh;
-    margin: 0;
-    font-family: "Lexend Deca" , sans-serif;
-    background-color: #FBFBFB; /* Color de fondo claro */
+    background-color: #222222;
+
 }
 
 main {
-    padding: 20px;
-    width: 100%;
-    max-width: 350px;
-    margin: 0 auto; /* Centra horizontalmente */
-    flex-grow: 1; /* Ocupa espacio vertical disponible */
+    flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centra verticalmente el contenido */
+    align-items: center;
+    justify-content: center;
+    background-color: #222222;
 }
 
 /* Estilos para mensajes de error */
@@ -77,16 +79,28 @@ header {
  * --------------------------------
  */
 
-main > div:first-child {
+.logo-container {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 img {
     width: 120px;
     height: 120px;
-    margin-bottom: 80px;
-    border-radius: 10%;
+    margin-bottom: 50px;
+    border-radius: 10px;
+}
+
+.gato_katalyst {
+    width: 500px;
+    height: auto;
+    margin-top: 20px;
+}
+
+label {
+    color: #FBFBFB;
+    font-size: 1.2em;
+    font-family: "Lexend Deca", sans-serif;
 }
 
 /*
@@ -95,10 +109,23 @@ img {
  * --------------------------------
  */
 
+#container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+    gap: 40px;
+}
+
+.left-login, .right-login {
+    width: 521px;
+}
+
 form {
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Espacio entre campos */
+    gap: 20px;
 }
 
 input[type="text"], 
@@ -107,16 +134,20 @@ input[type="password"] {
     padding: 15px;
     border: none;
     border-radius: 10px; 
-    background-color: #4f4f4f; 
+    background-color: #191919; 
     color: white; 
     font-size: 1.1em;
-    text-align: center; 
+    text-align: left; 
     box-sizing: border-box;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25); 
+    font-family: "Lexend Deca", sans-serif;
+    margin-bottom: 43px;
+    border: 1px solid #3A3A3A;
 }
 
 input::placeholder {
     color: rgba(255, 255, 255, 0.8);
+    text-align: left;
 }
 
 /*
@@ -126,7 +157,11 @@ input::placeholder {
  */
 
 button[id="submit"] {
-    background-color: #5abcb7; /* Turquesa */
+    width: 25vh;
+    background: linear-gradient(90deg, #8B4C94 0%, #2B182E 50%, #8B4C94 100%);
+    background-size: 200% 100%;
+    background-position: 0% 50%;
+    font-family: "Lexend Deca", sans-serif;
     color: white;
     font-size: 1.2em;
     font-weight: bold;
@@ -134,7 +169,18 @@ button[id="submit"] {
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    margin-top: 15px;
+    margin-top: 6vh;
+    transition: background-position 0.4s ease-in-out;
+}
+
+button[id="submit"]:hover {
+    background-position: 100% 50%;
+}
+
+.submit-div {
+    text-align: center;
+    align-items: center;
+    justify-content: center;
 }
 
 /*
@@ -145,15 +191,15 @@ button[id="submit"] {
 
 footer {
     text-align: center;
-    padding: 15px 0;
+    padding: 20px 0;
+    background-color: #1a1a1a;
+    color: #FBFBFB;
     font-size: 0.9em;
-    color: #666;
-    font-family: Arial, sans-serif;
-    bottom: 50px;
+    font-family: "Lexend Deca", sans-serif;
 }
 
 footer a {
-    color: #5abcb7; /* Mismo turquesa que tu botón */
+    color: #8B4C94;
     text-decoration: none;
     font-weight: bold;
 }
